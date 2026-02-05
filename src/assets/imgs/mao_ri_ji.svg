@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- 昴日鸡 - 简化版 -->
+  <g transform="translate(50, 50)">
+    <!-- 主要连线 -->
+    <line x1="-25" y1="-10" x2="-10" y2="-15" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-10" y1="-15" x2="0" y2="-20" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+    <line x1="0" y1="-20" x2="10" y2="-15" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+    <line x1="10" y1="-15" x2="25" y2="-10" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+    <!-- 星点 -->
+    <circle cx="-25" cy="-10" r="4" fill="#ffffff"/>
+    <circle cx="-10" cy="-15" r="4" fill="#ffffff"/>
+    <circle cx="0" cy="-20" r="4" fill="#ffffff"/>
+    <circle cx="10" cy="-15" r="4" fill="#ffffff"/>
+    <circle cx="25" cy="-10" r="4" fill="#ffffff"/>
+  </g>
+</svg>
