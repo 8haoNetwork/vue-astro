@@ -43,7 +43,7 @@
           <div class="feature-icon">🎂</div>
           <h3>生辰测算</h3>
           <p>根据你的出生日期，分析你的命理特征和运势走向</p>
-          <router-link to="/birthday" class="btn btn-secondary">查看详情</router-link>
+          <router-link to="/bazi" class="btn btn-secondary">查看详情</router-link>
         </div>
       </div>
     </div>

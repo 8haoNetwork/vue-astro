@@ -144,7 +144,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { fetchStar } from '../services/api'
+import { fetchStar } from '../services/naks'
 import { zhCN, enUS, i18n } from '../i18n'
 import StarMansionChart from '../components/StarMansionChart.vue'
 
@@ -196,14 +196,14 @@ const getRelationTypeName = (type) => {
         // 构建请求参数 - 适配新的后端接口格式
         const qry = {
           birth_info: {
-            birthday: `${birthDate.value} ${birthTime.value}:00`,
+            birth_dt: `${birthDate.value} ${birthTime.value}:00`,
             tz: 8,
             longitude: null,
             latitude: null,
             user_id: ''
           },
           others_birth_info: [],
-          target_date: null,
+          target_dt: null,
           is_solar_time: false,
           is_late_zi: false,
           niu_xiu_handle: 'nvxiu'

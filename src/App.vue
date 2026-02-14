@@ -8,7 +8,7 @@
         <router-link to="/horoscope">星盘</router-link>
         <router-link to="/ziwei">紫薇</router-link>
         <router-link to="/star">星宿</router-link>
-        <router-link to="/birthday">生辰</router-link>
+        <router-link to="/bazi">生辰</router-link>
       </nav>
     </header>
     <main class="app-main">
@@ -97,7 +97,7 @@
   }
   
   .app-main {
-    padding: 1rem;
+    padding: 0rem;
   }
 }
 </style>

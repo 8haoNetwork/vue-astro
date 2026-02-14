@@ -4,7 +4,8 @@ import Constellation from '../views/Constellation.vue'
 import Horoscope from '../views/Horoscope.vue'
 import Ziwei from '../views/Ziwei.vue'
 import Star from '../views/Star.vue'
-import Birthday from '../views/Birthday.vue'
+import Bazi from '../views/bazi/index.vue'
+import BaziMatch from '../views/bazi/BaziMatch.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -35,9 +36,14 @@ const router = createRouter({
       component: Star
     },
     {
-      path: '/birthday',
-      name: 'Birthday',
-      component: Birthday
+      path: '/bazi',
+      name: 'Bazi',
+      component: Bazi
+    },
+    {
+      path: '/bazi/match',
+      name: 'BaziMatch',
+      component: BaziMatch
     }
   ]
 })

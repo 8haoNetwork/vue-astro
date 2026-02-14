@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // 创建axios实例
-const apiClient = axios.create({
+export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL, // 从环境变量获取API基础URL
   timeout: 10000, // 请求超时时间
   headers: {
@@ -83,29 +83,3 @@ export const fetchZiwei = async (birthDate, birthTime, gender) => {
   }
 }
 
-// 星宿分析API - 适配新的后端接口
-export const fetchStar = async (qry) => {
-  try {
-    const response = await apiClient.post('/naks/relations', qry)
-    return response
-  } catch (error) {
-    console.error('获取星宿分析失败:', error)
-    throw error
-  }
-}
-
-// 生辰测算API
-export const fetchBirthday = async (birthDate, birthTime) => {
-  try {
-    const response = await apiClient.get('/birthday', {
-      params: {
-        birthDate,
-        birthTime
-      }
-    })
-    return response
-  } catch (error) {
-    console.error('获取生辰测算失败:', error)
-    throw error
-  }
-}
