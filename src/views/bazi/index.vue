@@ -12,6 +12,9 @@
           <input id="birthTime" v-model="birthTime" type="time" required>
         </div>
       </div>
+      <button type="button" class="submit-btn" :disabled="loading" @click="onSubmit">
+        {{ loading ? '测算中...' : '重新测算' }}
+      </button>
     </div>
 
     <div v-if="loading" class="status-card">测算中...</div>
@@ -151,6 +154,17 @@ const switchToSummary = () => {
   fetchSummary()
 }
 
+/** 提交表单：根据当前 tab 重新请求对应接口 */
+const onSubmit = () => {
+  if (activeTab.value === 'natal') {
+    fetchNatal()
+  } else if (activeTab.value === 'flow') {
+    fetchFlow()
+  } else {
+    fetchSummary()
+  }
+}
+
 onMounted(() => {
   fetchNatal()
 })
@@ -206,6 +220,28 @@ onMounted(() => {
   border-radius: 8px;
   padding: 8px;
   font-size: 14px;
+}
+
+.submit-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background: #8b7355;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #7a6449;
+}
+
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .status-card {

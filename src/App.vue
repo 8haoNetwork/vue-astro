@@ -1,11 +1,12 @@
 <template>
   <div class="app-container">
     <header class="app-header">
-      <h1>星座星盘占卜</h1>
+      <h1 class="app-title">ApiWorks Astro Demo</h1>
       <nav class="main-nav">
         <router-link to="/">首页</router-link>
-        <router-link to="/constellation">星座</router-link>
-        <router-link to="/horoscope">星盘</router-link>
+        <router-link to="/sign">星座</router-link>
+        <router-link to="/scope">运势</router-link>
+        <router-link to="/chart">星盘</router-link>
         <router-link to="/ziwei">紫薇</router-link>
         <router-link to="/star">星宿</router-link>
         <router-link to="/bazi">生辰</router-link>
@@ -15,7 +16,9 @@
       <router-view />
     </main>
     <footer class="app-footer">
-      <p>© 2026 星座星盘占卜 - 探索宇宙奥秘</p>
+      <p class="footer-powered">
+        Powered by <a href="https://astro.apiworks.com" target="_blank" rel="noopener noreferrer">apiworks.com</a>
+      </p>
     </footer>
   </div>
 </template>
@@ -37,10 +40,13 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.app-header h1 {
-  margin: 0 0 1rem 0;
-  font-size: 1.8rem;
+.app-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.95rem;
+  font-weight: 500;
   text-align: center;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.02em;
 }
 
 .main-nav {
@@ -78,13 +84,31 @@
   margin-top: auto;
 }
 
+.app-footer p {
+  margin: 0.25rem 0;
+}
+
+.footer-powered {
+  font-size: 0.75rem;
+  opacity: 0.65;
+}
+
+.footer-powered a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.footer-powered a:hover {
+  opacity: 1;
+}
+
 @media (max-width: 768px) {
   .app-header {
     padding: 1rem;
   }
   
-  .app-header h1 {
-    font-size: 1.4rem;
+  .app-title {
+    font-size: 0.85rem;
   }
   
   .main-nav {

@@ -14,7 +14,15 @@ export const apiClient = axios.create({
 // 请求拦截器
 apiClient.interceptors.request.use(
   config => {
-    // 可以在这里添加认证token等
+    // 添加 X-App-Id 和 X-App-Key 头部
+    const appId = import.meta.env.VITE_APP_ID || ''
+    const appKey = import.meta.env.VITE_APP_KEY || ''
+    if (appId) {
+      config.headers['X-App-Id'] = appId
+    }
+    if (appKey) {
+      config.headers['X-App-Key'] = appKey
+    }
     return config
   },
   error => {
@@ -32,54 +40,3 @@ apiClient.interceptors.response.use(
     return Promise.reject(error)
   }
 )
-
-// 星座运势API
-export const fetchConstellation = async (constellation, type) => {
-  try {
-    const response = await apiClient.get('/constellation', {
-      params: {
-        constellation,
-        type
-      }
-    })
-    return response
-  } catch (error) {
-    console.error('获取星座运势失败:', error)
-    throw error
-  }
-}
-
-// 个人星盘API
-export const fetchHoroscope = async (birthDate, birthTime, birthPlace) => {
-  try {
-    const response = await apiClient.get('/horoscope', {
-      params: {
-        birthDate,
-        birthTime,
-        birthPlace
-      }
-    })
-    return response
-  } catch (error) {
-    console.error('获取个人星盘失败:', error)
-    throw error
-  }
-}
-
-// 紫薇斗数API
-export const fetchZiwei = async (birthDate, birthTime, gender) => {
-  try {
-    const response = await apiClient.get('/ziwei', {
-      params: {
-        birthDate,
-        birthTime,
-        gender
-      }
-    })
-    return response
-  } catch (error) {
-    console.error('获取紫薇斗数失败:', error)
-    throw error
-  }
-}
-

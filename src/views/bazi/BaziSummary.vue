@@ -386,7 +386,7 @@ const wxRing = computed(() => {
     shengList.push({
       x: cx + shengTextR * Math.cos(rad),
       y: cy + shengTextR * Math.sin(rad),
-      arrowPath: `M ${ax - tx} ${ay - ty} L ${ax + tx} ${ay + ty}`
+      arrowPath: `M ${ax + tx} ${ay + ty} L ${ax - tx} ${ay - ty}`
     })
   }
   const dotList = []

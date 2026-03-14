@@ -8,14 +8,26 @@
           <label>自己</label>
           <div class="form-row">
             <input v-model="yourBirthDate" type="date" placeholder="出生日期">
-            <input v-model="yourBirthTime" type="time" placeholder="出生时间">
+            <input v-model="yourBirthTime" type="time" step="1" placeholder="出生时间">
+          </div>
+          <div class="form-row form-row--gender">
+            <select v-model="yourGender" class="gender-select">
+              <option value="male">男</option>
+              <option value="female">女</option>
+            </select>
           </div>
         </div>
         <div class="form-block">
           <label>对方</label>
           <div class="form-row">
             <input v-model="otherBirthDate" type="date" placeholder="出生日期">
-            <input v-model="otherBirthTime" type="time" placeholder="出生时间">
+            <input v-model="otherBirthTime" type="time" step="1" placeholder="出生时间">
+          </div>
+          <div class="form-row form-row--gender">
+            <select v-model="otherGender" class="gender-select">
+              <option value="male">男</option>
+              <option value="female">女</option>
+            </select>
           </div>
         </div>
       </div>
@@ -29,12 +41,12 @@
     <template v-else-if="matchData">
       <div class="charts-section">
         <div class="chart-col">
-          <div class="chart-title">你(男)</div>
+          <div class="chart-title">你({{ yourGenderLabel }})</div>
           <MatchNatalCard :data="matchData.your_natal" />
         </div>
         <div class="chart-divider" />
         <div class="chart-col">
-          <div class="chart-title">对方(男)</div>
+          <div class="chart-title">对方({{ otherGenderLabel }})</div>
           <MatchNatalCard :data="matchData.other_natal" />
         </div>
       </div>
@@ -50,16 +62,21 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { fetchBaziMatch } from '../../services/bazi'
 import { buildBaziMatchQry } from '../../composables/useBazi'
 import MatchNatalCard from './BaziMatchNatalCard.vue'
 
 const yourBirthDate = ref('2008-01-10')
 const yourBirthTime = ref('14:30:00')
+const yourGender = ref('male')
 const otherBirthDate = ref('1999-10-17')
 const otherBirthTime = ref('21:00:00')
+const otherGender = ref('female')
 const loading = ref(false)
+
+const yourGenderLabel = computed(() => yourGender.value === 'male' ? '男' : '女')
+const otherGenderLabel = computed(() => otherGender.value === 'male' ? '男' : '女')
 const error = ref('')
 const matchData = ref(null)
 
@@ -81,8 +98,10 @@ async function fetchMatch() {
     const qry = buildBaziMatchQry(
       yourBirthDate.value,
       yourBirthTime.value,
+      yourGender.value,
       otherBirthDate.value,
-      otherBirthTime.value
+      otherBirthTime.value,
+      otherGender.value
     )
     const res = await fetchBaziMatch(qry)
     if (res?.code === 0 && res?.data) {
@@ -161,6 +180,20 @@ async function fetchMatch() {
   border-radius: 8px;
   padding: 8px;
   font-size: 13px;
+}
+
+.form-row--gender {
+  margin-top: 6px;
+}
+
+.gender-select {
+  border: 1px solid #ece3dc;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: #333;
+  background: #fff;
+  min-width: 72px;
 }
 
 .submit-btn {

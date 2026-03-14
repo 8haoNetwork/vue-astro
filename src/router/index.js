@@ -1,11 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
-import Constellation from '../views/Constellation.vue'
-import Horoscope from '../views/Horoscope.vue'
+import Sign from '../views/Sign.vue'
+import Scope from '../views/Scope.vue'
 import Ziwei from '../views/Ziwei.vue'
 import Star from '../views/Star.vue'
 import Bazi from '../views/bazi/index.vue'
 import BaziMatch from '../views/bazi/BaziMatch.vue'
+import ChartIndex from '../views/chart/index.vue'
+import ChartPreview from '../views/chart/ChartPreview.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -16,14 +18,14 @@ const router = createRouter({
       component: Home
     },
     {
-      path: '/constellation',
-      name: 'Constellation',
-      component: Constellation
+      path: '/sign',
+      name: 'Sign',
+      component: Sign
     },
     {
-      path: '/horoscope',
-      name: 'Horoscope',
-      component: Horoscope
+      path: '/scope',
+      name: 'Scope',
+      component: Scope
     },
     {
       path: '/ziwei',
@@ -44,6 +46,16 @@ const router = createRouter({
       path: '/bazi/match',
       name: 'BaziMatch',
       component: BaziMatch
+    },
+    {
+      path: '/chart',
+      name: 'Chart',
+      component: ChartIndex
+    },
+    {
+      path: '/chart/preview',
+      name: 'ChartPreview',
+      component: ChartPreview
     }
   ]
 })

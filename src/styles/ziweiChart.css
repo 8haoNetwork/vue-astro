@@ -1,0 +1,983 @@
+/**
+ * 紫微斗数盘样式 - 与 vue_ziwei 源项目一致
+ * 来源：chartCommon.css + PalaceContent.vue + style.css :root
+ */
+
+:root {
+  --color-horoscope-benming: #e53131;
+  --color-horoscope-daxian: #592599;
+  --color-horoscope-liunian: #f58f00;
+  --color-horoscope-liuyue: #388e3c;
+  --color-horoscope-liuri: #954932;
+  --color-horoscope-liushi: #03a9f4;
+  --color-mutagen-lu: #4caf50;
+  --color-mutagen-quan: #ff9800;
+  --color-mutagen-ke: #2196f3;
+  --color-mutagen-ji: #f44336;
+}
+
+/* ========== 容器与顶部导航（chartCommon） ========== */
+.chart-container {
+  max-width: 100%;
+  margin: 0 auto;
+  background-color: #fff;
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.chart-back-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  margin-right: 12px;
+}
+
+.chart-back-btn:hover {
+  background-color: #f5f5f5;
+}
+
+.chart-header-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+  text-align: center;
+}
+
+.chart-header-right {
+  display: flex;
+  gap: 10px;
+}
+
+.chart-icon-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+/* ========== 4x4 传统布局（chartCommon） ========== */
+.chart-palace-grid-4x4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(4, 1fr);
+  padding: 3px;
+  width: 100%;
+  max-width: 900px;
+  margin: 16px auto;
+  height: calc(100vh - 120px);
+  min-height: 520px;
+  max-height: 700px;
+  box-sizing: border-box;
+}
+
+.chart-palace-box {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 3px;
+  font-size: 10px;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-palace-box:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chart-palace-box.highlight {
+  background-color: #e3f2fd;
+}
+
+.chart-palace-box.highlight-surrounded {
+  background-color: #fff3e0;
+  cursor: pointer;
+}
+
+/* 宫格内标题（宫名） */
+.chart-palace-box .chart-palace-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 2px;
+  font-size: 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 2px;
+  flex-shrink: 0;
+}
+
+.chart-palace-box .chart-palace-cell-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 宫格内容填满剩余高度，保证 palace-bottom 贴底 */
+.chart-palace-cell-wrap .palace-content {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+/* 中间信息块 */
+.chart-info-block-center {
+  grid-column: 2 / 4;
+  grid-row: 2 / 4;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.chart-info-block-center .chart-info-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  font-size: 12px;
+  width: 100%;
+}
+
+.chart-info-row {
+  margin-bottom: 3px;
+  font-size: 11px;
+  color: #666;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  width: auto;
+  line-height: 1.4;
+}
+
+.chart-info-row-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.chart-info-label {
+  font-weight: 500;
+  color: #555;
+  margin-right: 8px;
+  min-width: fit-content;
+}
+
+.chart-info-label-spaced {
+  margin-left: 20px;
+}
+
+.chart-info-value {
+  color: #333;
+}
+
+/* 中间信息块：四化图例与颜色 */
+.chart-transform-indicators {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.chart-self-transform-indicator,
+.chart-opposite-transform-indicator {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 11px;
+  color: #333;
+}
+
+.chart-transform-icon {
+  font-size: 14px;
+  color: #333;
+}
+
+.chart-transform-legend {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.chart-color-lu {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.chart-color-quan {
+  color: #ff9800;
+  font-weight: bold;
+}
+
+.chart-color-ke {
+  color: #2196f3;
+  font-weight: bold;
+}
+
+.chart-color-ji {
+  color: #f44336;
+  font-weight: bold;
+}
+
+/* 加载状态 */
+.chart-loading {
+  text-align: center;
+  padding: 20px;
+  color: #999;
+}
+
+/* ========== 宫位内容（PalaceContent） ========== */
+.palace-content {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 3px;
+  font-size: 10px;
+  /* 不设 height/justify-content，由下方的 margin-top: auto 把底部推到底 */
+}
+
+.body-palace-label {
+  position: absolute;
+  left: 2px;
+  top: 40%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.body-palace-text {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: 9px;
+  font-weight: 600;
+  color: rgb(243, 117, 117);
+  line-height: 0.5;
+  padding: 2px 4px;
+  border: 1px solid rgb(243, 117, 117);
+  border-radius: 2px;
+}
+
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+
+/* 宫格左侧流耀星（竖排） */
+.palace-left-container {
+  position: absolute;
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.dynamic-stars-vertical {
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  align-items: flex-end;
+}
+
+.dynamic-star-item {
+  font-size: 9px;
+  line-height: 1.1;
+}
+
+.stars-row {
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap-reverse;
+  margin-bottom: 2px;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.star-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1px;
+}
+
+.main-star-group {
+  min-width: 3px;
+}
+
+.minor-star-group {
+  min-width: 2px;
+}
+
+.star-name-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: 11px;
+  color: #1a1a1a;
+  line-height: 1.2;
+  text-align: center;
+  padding: 2px 0;
+}
+
+.star-brightness-text {
+  font-size: 9px;
+  color: #666;
+  writing-mode: horizontal-tb;
+  text-align: center;
+  width: 100%;
+}
+
+/* 星曜亮度颜色 - 与 vue_ziwei 一致 */
+.brightness-miao .star-name-vertical {
+  color: #c62828;
+}
+
+.brightness-wang .star-name-vertical {
+  color: #e65100;
+}
+
+.brightness-de .star-name-vertical {
+  color: #2e7d32;
+}
+
+.brightness-li .star-name-vertical {
+  color: #1565c0;
+}
+
+.brightness-ping .star-name-vertical {
+  color: #424242;
+}
+
+.brightness-budedi .star-name-vertical,
+.brightness-xian .star-name-vertical {
+  color: #757575;
+}
+
+.minor-star-group .star-name-vertical {
+  font-size: 10px;
+}
+
+/* 四化多行容器、自化/对宫化入 */
+.mutagen-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-items: center;
+}
+
+.transform-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 1px;
+  width: 100%;
+  flex-direction: column;
+}
+
+.transform-icon-lu {
+  color: var(--color-mutagen-lu);
+}
+
+.transform-icon-quan {
+  color: var(--color-mutagen-quan);
+}
+
+.transform-icon-ke {
+  color: var(--color-mutagen-ke);
+}
+
+.transform-icon-ji {
+  color: var(--color-mutagen-ji);
+}
+
+.transform {
+  display: inline-block;
+  padding: 2px;
+  border-radius: 2px;
+  font-size: 9px;
+  color: #fff;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* 四化标识 */
+.transform-star {
+  font-size: 8px;
+  padding: 1px 3px;
+  width: auto;
+  min-width: 12px;
+  display: inline-block;
+  border-radius: 2px;
+  color: #fff;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.transform-lu {
+  background-color: var(--color-mutagen-lu);
+}
+
+.transform-quan {
+  background-color: var(--color-mutagen-quan);
+}
+
+.transform-ke {
+  background-color: var(--color-mutagen-ke);
+}
+
+.transform-ji {
+  background-color: var(--color-mutagen-ji);
+}
+
+/* 底部区域 */
+.palace-bottom-container {
+  margin-top: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 25px; /* 保证每个宫格底部都有一致占位，即使无内容 */
+}
+
+.palace-bottom {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-end;
+  padding-top: 2px;
+  min-height: 25px;
+  position: relative;
+}
+
+.bottom-left {
+  position: absolute;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  font-size: 9px;
+  color: #666;
+}
+
+.extra-star-horizontal {
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  line-height: 1.2;
+  display: inline-block;
+}
+
+.bottom-center {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-direction: column;
+  flex: 0 0 auto;
+  min-width: 60px;
+  min-height: 35px;
+  width: 60px;
+}
+
+.palace-name-highlight {
+  font-size: 12px;
+  color: #c62828;
+  writing-mode: horizontal-tb;
+}
+
+/* 年龄范围信息 */
+.age-range-info {
+  font-size: 8px;
+  color: rgb(23, 22, 22);
+  text-align: left;
+  width: 100%;
+  margin-bottom: 2px;
+  padding-left: 2px;
+}
+
+.age-range-info.age-range-in-range {
+  border: 1px solid;
+  border-radius: 2px;
+  padding: 1px 2px;
+  display: inline-block;
+  width: fit-content;
+  margin-left: 0;
+  align-self: flex-start;
+}
+
+/* 运限宫位两列 */
+.horoscope-palaces {
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+}
+
+.horoscope-column {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 2px;
+  flex: 0 0 auto;
+  min-width: 30px;
+}
+
+.horoscope-column:first-child {
+  align-items: flex-end;
+}
+
+.horoscope-column:last-child {
+  align-items: flex-start;
+}
+
+.horoscope-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  line-height: 1;
+}
+
+.horoscope-text {
+  color: #333;
+  font-weight: 600;
+  font-size: 9px;
+}
+
+.horoscope-benming {
+  color: var(--color-horoscope-benming);
+}
+
+.horoscope-daxian {
+  color: var(--color-horoscope-daxian);
+}
+
+.horoscope-liunian {
+  color: var(--color-horoscope-liunian);
+}
+
+.horoscope-liuyue {
+  color: var(--color-horoscope-liuyue);
+}
+
+.horoscope-liuri {
+  color: var(--color-horoscope-liuri);
+}
+
+.horoscope-liushi {
+  color: var(--color-horoscope-liushi);
+}
+
+.palace-ages {
+  display: flex;
+  flex-direction: row;
+  gap: 1px;
+  margin: 0;
+  margin-bottom: 2px;
+  font-size: 8px;
+  color: rgb(38, 37, 37);
+  line-height: 1.2;
+  justify-content: start;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.age-item {
+  display: inline-block;
+  padding: 0 1px;
+}
+
+.bottom-right {
+  position: absolute;
+  right: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  font-size: 9px;
+  text-align: right;
+}
+
+.bottom-right-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.life-12-star {
+  font-size: 9px;
+  line-height: 1.2;
+  text-align: right;
+  color: #333;
+}
+
+.branch-text {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  line-height: 1.2;
+  text-align: right;
+}
+
+/* 星曜类型颜色（主星/软星/硬星/杂曜等） */
+.star-type-major {
+  color: #1a1a1a;
+  font-size: 10px;
+}
+
+.star-type-soft {
+  color: #1565c0;
+}
+
+.star-type-tough {
+  color: #c62828;
+}
+
+.star-type-adjective {
+  color: #6a1b9a;
+}
+
+.star-type-flower {
+  color: #ad1457;
+}
+
+.star-type-helper {
+  color: #2e7d32;
+}
+
+.star-type-lucun {
+  color: #e65100;
+}
+
+.star-type-tianma {
+  color: #00695c;
+}
+
+.star-type-other {
+  color: #616161;
+}
+
+/* 格局 / 星耀解读（chartCommon） */
+.chart-patterns-container,
+.chart-star-interps-container {
+  max-width: 900px;
+  margin: 20px auto 0;
+  padding: 0 20px;
+  background-color: #fff;
+  border-top: 1px solid #eee;
+}
+
+.chart-patterns-title,
+.chart-star-interps-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  padding: 16px 0 12px 0;
+  border-bottom: 1px solid #eee;
+  margin: 0;
+}
+
+.chart-patterns-content,
+.chart-star-interps-content {
+  padding: 16px 0 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chart-pattern-item {
+  padding: 12px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  border-left: 4px solid #667eea;
+  transition: box-shadow 0.2s;
+}
+
+.chart-pattern-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chart-pattern-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #667eea;
+  margin-bottom: 6px;
+}
+
+.chart-pattern-description {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.chart-star-interp-item {
+  padding: 12px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  border-left: 4px solid #4caf50;
+  transition: box-shadow 0.2s;
+}
+
+.chart-star-interp-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chart-star-interp-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.chart-star-interp-star-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #4caf50;
+}
+
+.chart-star-interp-palace-name {
+  font-size: 13px;
+  color: #999;
+  padding: 2px 8px;
+  background-color: #e8f5e9;
+  border-radius: 4px;
+}
+
+.chart-star-interp-description {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .chart-container {
+    padding-bottom: 40px;
+  }
+
+  .chart-header {
+    padding: 8px 12px;
+  }
+
+  .chart-header-title {
+    font-size: 16px;
+  }
+
+  .chart-icon-btn {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+
+  .chart-palace-grid-4x4 {
+    padding: 3px;
+    max-width: 100%;
+    height: calc(100vh - 160px);
+    min-height: 400px;
+    max-height: 600px;
+  }
+
+  .chart-palace-box {
+    padding: 4px;
+    font-size: 9px;
+  }
+
+  .chart-palace-box .chart-palace-name {
+    font-size: 9px;
+  }
+
+  .chart-info-block-center {
+    padding: 6px;
+  }
+
+  .chart-info-row {
+    font-size: 10px;
+    margin-bottom: 4px;
+    gap: 8px;
+  }
+
+  .chart-info-row-title {
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+
+  .chart-info-content {
+    font-size: 10px;
+    gap: 4px;
+  }
+
+  .palace-content {
+    padding: 2px;
+    font-size: 9px;
+  }
+
+  .star-name-vertical {
+    font-size: 8px;
+  }
+
+  .minor-star-group .star-name-vertical {
+    font-size: 8px;
+  }
+
+  .star-brightness-text {
+    font-size: 8px;
+  }
+
+  .stars-row {
+    gap: 0;
+    margin-bottom: 1px;
+  }
+
+  .main-star-group {
+    min-width: 1px;
+  }
+
+  .minor-star-group {
+    min-width: 1px;
+  }
+
+  .transform-star {
+    font-size: 8px;
+    padding: 1px 1px;
+    min-width: 10px;
+  }
+
+  .palace-ages {
+    font-size: 7px;
+  }
+
+  .life-12-star {
+    font-size: 7px;
+  }
+
+  .bottom-left {
+    font-size: 8px;
+  }
+
+  .palace-name-highlight {
+    font-size: 10px;
+  }
+
+  .age-range-info {
+    font-size: 6px;
+  }
+
+  .chart-patterns-container,
+  .chart-star-interps-container {
+    padding: 0 15px;
+    margin: 15px auto;
+  }
+
+  .chart-pattern-item,
+  .chart-star-interp-item {
+    padding: 10px;
+  }
+
+  .chart-pattern-name,
+  .chart-star-interp-star-name {
+    font-size: 13px;
+  }
+
+  .chart-pattern-description,
+  .chart-star-interp-description {
+    font-size: 12px;
+  }
+
+  .chart-star-interp-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .chart-star-interp-palace-name {
+    font-size: 12px;
+    padding: 2px 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .palace-content {
+    padding: 2px;
+    font-size: 8px;
+  }
+
+  .star-name-vertical {
+    font-size: 8px;
+    padding: 1px 0;
+  }
+
+  .minor-star-group .star-name-vertical {
+    font-size: 7px;
+  }
+
+  .star-brightness-text {
+    font-size: 6px;
+  }
+
+  .palace-ages {
+    font-size: 6px;
+  }
+
+  .bottom-right {
+    font-size: 8px;
+  }
+
+  .life-12-star {
+    font-size: 7px;
+  }
+
+  .bottom-left {
+    font-size: 7px;
+  }
+
+  .palace-name-highlight {
+    font-size: 9px;
+  }
+
+  .age-range-info {
+    font-size: 6px;
+  }
+}

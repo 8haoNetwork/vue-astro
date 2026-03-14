@@ -16,18 +16,6 @@ export const emptyPillar = type => ({
   shen_sha: []
 })
 
-export const emptyFlow = type => ({
-  type,
-  key: '--',
-  sub_key: '',
-  tg: '--',
-  tg_shen_sha: '',
-  dz: '--',
-  dz_shen_sha: '',
-  na_yin_wx: '',
-  is_current: false
-})
-
 /**
  * 按给定顺序返回 pillars，与 natal/flow 返回数量一致。
  * @param pillars 接口返回的 pillars 数组
@@ -130,10 +118,21 @@ export function wangXiangClass(value) {
   return wangXiangWxMap[first] || ''
 }
 
+/** 将时间规范为 HH:mm:ss（不足则补 :00） */
+function normalizeTimeToSeconds(timeStr) {
+  if (!timeStr || typeof timeStr !== 'string') return '00:00:00'
+  const t = timeStr.trim()
+  const parts = t.split(':')
+  const h = parts[0]?.padStart(2, '0') || '00'
+  const m = parts[1]?.padStart(2, '0') || '00'
+  const s = parts[2] != null ? String(parts[2]).padStart(2, '0') : '00'
+  return `${h}:${m}:${s}`
+}
+
 /** 请求参数，birthDate/birthTime 为字符串 */
 export function buildBaziQry(birthDate, birthTime) {
   return {
-    birth_dt: `${birthDate} ${birthTime}`,
+    birth_dt: `${birthDate} ${normalizeTimeToSeconds(birthTime)}`,
     tz: 8,
     gender: 'male',
     is_solar_time: false,
@@ -145,19 +144,24 @@ export function buildBaziQry(birthDate, birthTime) {
  * 合盘请求参数
  * @param yourBirthDate 自己的出生日期 'YYYY-MM-DD'
  * @param yourBirthTime 自己的出生时间 'HH:mm' 或 'HH:mm:ss'
+ * @param yourGender 自己的性别 'male' | 'female'
  * @param otherBirthDate 对方的出生日期 'YYYY-MM-DD'
  * @param otherBirthTime 对方的出生时间 'HH:mm' 或 'HH:mm:ss'
+ * @param otherGender 对方的性别 'male' | 'female'
  */
 export function buildBaziMatchQry(
   yourBirthDate,
   yourBirthTime,
+  yourGender,
   otherBirthDate,
-  otherBirthTime
+  otherBirthTime,
+  otherGender
 ) {
   const your = buildBaziQry(yourBirthDate, yourBirthTime)
   return {
     ...your,
-    other_birth_dt: `${otherBirthDate} ${otherBirthTime}`,
-    other_gender: 'female',
+    gender: yourGender === 'female' ? 'female' : 'male',
+    other_birth_dt: `${otherBirthDate} ${normalizeTimeToSeconds(otherBirthTime)}`,
+    other_gender: otherGender === 'female' ? 'female' : 'male',
   }
 }
