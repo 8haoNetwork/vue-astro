@@ -236,6 +236,13 @@ async function onSubmit() {
 
   loading.value = true
   try {
+    let default_params = {
+      bodies: ["0","1","2","3","4","5","6","7","8","9","m"],
+      asteroids: ["I"],
+      virtual_bodies: ["10","11"],
+      render_mode: 'Default'
+
+    }
     let params
     if (!isComposite.value) {
       params = {
@@ -254,7 +261,7 @@ async function onSubmit() {
         birthTime: birthTimeA.value,
         latitude: latitudeA.value,
         longitude: longitudeA.value,
-        transitDate: transitDate.value || birthDateA.value,
+        transitDate: transitDate.value,
         transitTime: transitTime.value
       }
     } else {
@@ -267,11 +274,12 @@ async function onSubmit() {
         birthTimeB: birthTimeB.value,
         latitudeB: latitudeB.value,
         longitudeB: longitudeB.value,
-        transitDate: transitDate.value || birthDateB.value,
+        transitDate: transitDate.value,
         transitTime: transitTime.value
       }
     }
-    const data = await fetchChart(chartType.value, params)
+    let real_params = { ...default_params, ...params }
+    const data = await fetchChart(chartType.value, real_params)
     result.value = data
   } catch (e) {
     error.value = e?.response?.data?.msg || e?.message || '请求失败'

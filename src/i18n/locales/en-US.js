@@ -98,7 +98,11 @@ export default {
     submit: 'Query',
     loading: 'Loading...',
     resultTitle: 'Chart result',
-    resultPlaceholder: 'No structured display yet; see API response.'
+    resultPlaceholder: 'No structured display yet; see API response.',
+    labelModeTitle: 'Chart labels',
+    labelModeZh: 'Chinese',
+    labelModeSymbol: 'Symbols',
+    labelModeGroup: 'How to show signs and planets on the chart'
   },
   // Ziwei Dou Shu
   ziwei: {

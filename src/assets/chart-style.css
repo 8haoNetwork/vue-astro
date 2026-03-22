@@ -1,38 +1,11 @@
 /**
  * 星盘 SVG 样式 - 来源：astro_apiworks_web/public/static/css/astro-style.css
- * 为 API 返回的星盘 SVG（#chartbody 及内部 class）提供 fill、stroke、font 等，缺此文件则只有线框、文字不显示。
- * 字体路径改为同源 /fonts/（public/fonts/），仅保留 woff。
+ * 为 API 返回的星盘 SVG（#chartbody 及内部 class）提供 fill、stroke、font 等。
+ * 行星/星座文字由 ChartResult 中 applyAstroChartSvgLabels 替换为中文或 Unicode 符号。
  */
-@font-face {
-    font-family: 'web_ixingpan';
-    src: url('/fonts/ixingpan.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'web_ixingpan_cn';
-    src: url('/fonts/ixingpancn.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'ixingpan';
-    src: url('/fonts/ixingpan.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'ixingpan_cn';
-    src: url('/fonts/ixingpancn.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
+/* 默认字体只写在 #chartbody；星盘 ♈ 等见下方 sign 段 + main.js Noto */
+#chartbody {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 
 @media screen and (min-width: 680px ) {
@@ -58,11 +31,11 @@ text {
 }
 
 .text_font {
-    font-family: 'web_ixingpan_cn', 'ixingpan_cn', 'web_ixingpan', 'ixingpan', sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 
 .must_symbo_font {
-    font-family: 'web_ixingpan', 'ixingpan', sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 
 .red {
@@ -132,6 +105,7 @@ text {
 #chartbody .house_id {
     font-size: 16px;
     stroke-width: 1;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 
 #chartbody .house_id:hover {
@@ -175,13 +149,22 @@ text {
 
 /* ------------------------------ house ------------------------------------ */
 /* ------------------------------ sign ------------------------------------ */
-
-.sign_font {
-    font-size: 26px;
-    font-family: 'web_ixingpan_cn', 'ixingpan_cn', 'web_ixingpan', 'ixingpan', sans-serif;
+/* Noto + font-variant-emoji；勿对 #chartbody text 写全局 font-family；勿删 main.js @fontsource */
+#chartbody .sign_font,
+#chartbody .senior_sign_font,
+#chartbody .planet_font,
+#chartbody .planet_font2,
+#chartbody .senior_planet_font {
+    font-family: 'Noto Sans Symbols 2', 'Segoe UI Symbol', 'DejaVu Sans', 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+    -webkit-font-variant-emoji: text;
+    font-variant-emoji: text;
 }
 
-.sign_font:hover {
+#chartbody .sign_font {
+    font-size: 26px;
+}
+
+#chartbody .sign_font:hover {
     font-size: 28px;
 }
 
@@ -217,11 +200,11 @@ text {
     color: #0A0AFF;
 }
 
-.senior_sign_font {
+#chartbody .senior_sign_font {
     font-size: 20px !important;
 }
 
-.senior_sign_font:hover {
+#chartbody .senior_sign_font:hover {
     font-size: 22px !important;
 }
 
@@ -230,32 +213,30 @@ text {
 
 .guardian_font {
     font-size: 16px;
-    font-family: 'web_ixingpan_cn', 'ixingpan_cn', 'web_ixingpan', 'ixingpan', sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 
 .guardian_font:hover {
     font-size: 20px;
 }
 
-.planet_font {
+#chartbody .planet_font {
     font-size: 14px;
     line-height: 1;
     stroke: none;
-    font-family: 'web_ixingpan_cn', 'ixingpan_cn', 'web_ixingpan', 'ixingpan', sans-serif;
 }
 
-.planet_font:hover {
+#chartbody .planet_font:hover {
     font-size: 16px;
 }
 
-.planet_font2 {
+#chartbody .planet_font2 {
     font-size: 14px;
     line-height: 1;
     stroke: none;
-    font-family: 'web_ixingpan_cn', 'ixingpan_cn', 'web_ixingpan', 'ixingpan', sans-serif;
 }
 
-.planet_font2:hover {
+#chartbody .planet_font2:hover {
     font-size: 16px;
 }
 
@@ -401,10 +382,6 @@ text {
     display: none;
 }
 
-.switch_web_ixingpan {
-    color: #0A0AFF;
-}
-
 .senior_planet_deg {
     font-family: "Microsoft YaHei", 微软雅黑, "MicrosoftJhengHei", 华文细黑, STHeiti, MingLiu;
     fill: black;
@@ -417,19 +394,21 @@ text {
     font-size: 12px;
 }
 
-.senior_planet_font {
+#chartbody .senior_planet_font {
     font-size: 24px;
     line-height: 1;
     stroke: none;
-    font-family: 'web_ixingpan_cn', 'ixingpan_cn', 'web_ixingpan', 'ixingpan', sans-serif;
 }
 
-.senior_planet_font:hover {
+#chartbody .senior_planet_font:hover {
     font-size: 28px;
 }
 
-.senior_house_sign_r {
+#chartbody .senior_house_sign_r {
     stroke: none;
     fill: #f73030;
-    font-size: 24px;
+    font-size: 11px;
+    font-family: system-ui, -apple-system, 'Segoe UI', 'Noto Sans Symbols 2', 'DejaVu Sans', 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+    -webkit-font-variant-emoji: text;
+    font-variant-emoji: text;
 }

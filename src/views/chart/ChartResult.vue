@@ -7,8 +7,25 @@
       </div>
     </template>
     <template v-else>
-      <!-- 星盘图 -->
-      <div v-if="chartData.svg" ref="chartDisplayRef" class="chart-display" v-html="chartData.svg" @click="onChartDisplayClick"></div>
+      <!-- 星盘图：标签由 JS 映射为中文或 Unicode 符号，不依赖专用字体 -->
+      <div v-if="chartData.svg" class="chart-svg-wrap">
+        <div class="chart-label-toolbar" role="group" :aria-label="$t('chart.labelModeGroup')">
+          <span class="chart-label-toolbar-title">{{ $t('chart.labelModeTitle') }}</span>
+          <button
+            type="button"
+            class="chart-label-btn"
+            :class="{ active: chartLabelMode === 'zh' }"
+            @click="setChartLabelMode('zh')"
+          >{{ $t('chart.labelModeZh') }}</button>
+          <button
+            type="button"
+            class="chart-label-btn"
+            :class="{ active: chartLabelMode === 'symbol' }"
+            @click="setChartLabelMode('symbol')"
+          >{{ $t('chart.labelModeSymbol') }}</button>
+        </div>
+        <div ref="chartDisplayRef" class="chart-display" v-html="chartData.svg" @click="onChartDisplayClick"></div>
+      </div>
       <div v-else class="chart-display chart-display-empty">
         <div class="empty-state"><div class="empty-state-icon">📊</div><div>暂无星盘图</div></div>
       </div>
@@ -96,6 +113,14 @@
 <script setup>
 import { ref, computed, watch, nextTick } from 'vue'
 import ChartDetail from './ChartDetail.vue'
+import {
+  applyAstroChartSvgLabels,
+  formatPlanetLabel,
+  formatSignLabel,
+  planetEnFromSerialAncestors,
+  readStoredChartLabelMode,
+  writeStoredChartLabelMode
+} from '../../utils/astroChartDisplay.js'
 
 const props = defineProps({
   result: { type: Object, default: null }
@@ -107,11 +132,11 @@ const chartData = computed(() => {
   return r?.data ?? r
 })
 
-/* 星盘字体与 #chartbody/.planet_font/.sign_font 等样式由 main.js 引入的 astro-style.css 提供，与 astro_apiworks_web 一致 */
-
 const activeCorpusTab = ref('sign')
 const showDetail = ref(false)
 const chartDisplayRef = ref(null)
+/** 默认中文；与 applyAstroChartSvgLabels 一致 */
+const chartLabelMode = ref(readStoredChartLabelMode())
 const chartModalVisible = ref(false)
 const chartModalTitle = ref('')
 const chartModalHtml = ref('')
@@ -152,6 +177,22 @@ function escapeHtml(val) {
   if (val == null) return ''
   return String(val).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
 }
+
+/**
+ * 星盘点击弹窗内展示：优先接口 planet_cn 全称，否则 planet_en；再无则退回简称映射。
+ * @param {{ planet_cn?: string, planet_en?: string } | null} row
+ * @param {object | null} data chartData
+ * @param {string | null} planetEnFallback
+ * @param {import('../../utils/astroChartDisplay.js').ChartLabelMode} mode
+ */
+function modalPlanetName(row, data, planetEnFallback, mode) {
+  if (row) {
+    const n = row.planet_cn || row.planet_en
+    if (n) return n
+  }
+  if (planetEnFallback) return formatPlanetLabel(planetEnFallback, mode, data)
+  return '-'
+}
 function isRetrograde(planet) {
   const speed = parseFloat(planet.speed)
   return !Number.isNaN(speed) && speed < 0
@@ -171,47 +212,47 @@ function showPlanetInfo(planetEn) {
   if (!data?.planet) return
   const planet = data.planet.find((p) => p.planet_en === planetEn)
   if (!planet) return
-  const name = planet.planet_cn || planet.planet_en
-  const font = planet.planet_font || ''
+  const mode = chartLabelMode.value
+  const name = modalPlanetName(planet, data, planet.planet_en, mode)
   const retro = isRetrograde(planet) ? '[逆行]' : ''
-  let title = ''
-  if (font) title += `<span style="font-family: 'ixingpan_cn', 'ixingpan', sans-serif;">${escapeHtml(font)}</span> `
-  title += escapeHtml(name) + retro
+  const title = escapeHtml(name) + retro
   let html = ''
   if (planet.sign) {
-    const signName = planet.sign.sign_cn || planet.sign.sign_en || '-'
-    const signFont = planet.sign.sign_font || ''
+    const signLabel =
+      mode === 'symbol' && planet.sign.sign_en
+        ? formatSignLabel(planet.sign.sign_en, 'symbol')
+        : planet.sign.sign_cn || planet.sign.sign_en || '-'
     const lon = planet.longitude != null ? planet.longitude % 30 : 0
     const deg = Math.floor(lon)
     const min = Math.floor((lon - deg) * 60)
     const sec = Math.round(((lon - deg) * 60 - min) * 60)
-    let line = '星座: 落于' + escapeHtml(signName)
-    if (signFont) line += `<span style="font-family: 'ixingpan_cn', 'ixingpan', sans-serif; margin-left: 5px;">${escapeHtml(signFont)}</span>`
-    line += `${deg}°${min}'${sec}"`
+    const line = '星座: 落于' + escapeHtml(signLabel) + `${deg}°${min}'${sec}"`
     html += `<div class="info-row"><span class="info-value">${line}</span></div>`
   }
   html += `<div class="info-row"><span class="info-value">宫位: 位于${planet.house_id}宫</span></div>`
   if (data.house) {
     const ruled = []
+    const nameKey = planet.planet_cn || planet.planet_en
     data.house.forEach((h) => {
-      if (h.main_planet?.some((mp) => mp.planet_code === planet.planet_code || (mp.planet_cn === name || mp.planet_en === planet.planet_en))) ruled.push(h.house_id)
+      if (h.main_planet?.some((mp) => mp.planet_code === planet.planet_code || (mp.planet_cn === nameKey || mp.planet_en === planet.planet_en))) ruled.push(h.house_id)
     })
     if (ruled.length) html += `<div class="info-row"><span class="info-value">是第${ruled.join('宫、第')}宫主星</span></div>`
   }
   if (planet.planet_allow_degree?.length) {
     html += '<div class="detail-section"><div class="detail-section-title">相位</div>'
     planet.planet_allow_degree.forEach((a) => {
-      const pName = a.planet_cn || a.planet_en || '-'
-      const pFont = a.planet_font || ''
+      const otherEn = a.planet_en
+      const otherRow = otherEn
+        ? data.planet.find((p) => p.planet_en === otherEn)
+        : null
+      const otherLabel = modalPlanetName(otherRow || (a.planet_cn || a.planet_en ? a : null), data, otherEn, mode)
       const sym = getAspectSymbol(a.asp_angle)
       const inOut = getInOutText(a.in_out)
       const d = a.deg ?? 0
       const m = a.min ?? 0
       const s = a.sec ?? 0
-      let line = '和' + escapeHtml(pName)
-      if (pFont) line += `<span style="font-family: 'ixingpan_cn', 'ixingpan', sans-serif; margin-left: 5px;">${escapeHtml(pFont)}</span>`
-      line += '成' + escapeHtml(String(a.asp_angle))
-      if (sym) line += `<span style="font-family: 'ixingpan_cn', 'ixingpan', sans-serif; margin-left: 3px;">${escapeHtml(sym)}</span>`
+      let line = '和' + escapeHtml(otherLabel) + '成' + escapeHtml(String(a.asp_angle))
+      if (sym) line += escapeHtml(sym)
       line += inOut + `${d}°${m}'${s}"`
       html += `<div class="info-row"><span class="info-value">${line}</span></div>`
     })
@@ -227,30 +268,28 @@ function showHouseInfo(houseId) {
   if (!data?.house) return
   const house = data.house.find((h) => h.house_id === houseId)
   if (!house) return
+  const mode = chartLabelMode.value
   const title = `${houseId}宫 [${house.house_life || ''}]`
   let html = ''
   if (house.sign) {
-    const signName = house.sign.sign_cn || house.sign.sign_en || '-'
-    const signFont = house.sign.sign_font || ''
+    const signLabel =
+      mode === 'symbol' && house.sign.sign_en
+        ? formatSignLabel(house.sign.sign_en, 'symbol')
+        : house.sign.sign_cn || house.sign.sign_en || '-'
     const lon = house.longitude != null ? house.longitude % 30 : 0
     const deg = Math.floor(lon)
     const min = Math.floor((lon - deg) * 60)
     const sec = Math.round(((lon - deg) * 60 - min) * 60)
-    let line = '宫头 ' + escapeHtml(signName)
-    if (signFont) line += `<span style="font-family: 'ixingpan_cn', 'ixingpan', sans-serif; margin-left: 5px;">${escapeHtml(signFont)}</span>`
-    line += ` ${deg}°${min}'${sec}"`
+    const line = '宫头 ' + escapeHtml(signLabel) + ` ${deg}°${min}'${sec}"`
     html += `<div class="info-row"><span class="info-value">${line}</span></div>`
   }
   if (house.main_planet?.length) {
     const mp = house.main_planet[0]
-    const pName = mp.planet_cn || mp.planet_en || '-'
-    const pFont = mp.planet_font || ''
     let rulerHouseId = '-'
-    const rp = data.planet?.find((p) => p.planet_cn === pName || p.planet_en === pName || p.planet_code === mp.planet_code)
+    const rp = data.planet?.find((p) => p.planet_cn === (mp.planet_cn || mp.planet_en) || p.planet_en === mp.planet_en || p.planet_code === mp.planet_code)
     if (rp) rulerHouseId = rp.house_id
-    let line = '宫主星 ' + escapeHtml(pName)
-    if (pFont) line += `<span style="font-family: 'ixingpan_cn', 'ixingpan', sans-serif; margin-left: 5px;">${escapeHtml(pFont)}</span>`
-    line += ' 落入 ' + rulerHouseId + '宫'
+    const rulerLabel = modalPlanetName(rp || mp, data, mp.planet_en || null, mode)
+    const line = '宫主星 ' + escapeHtml(rulerLabel) + ' 落入 ' + rulerHouseId + '宫'
     html += `<div class="info-row"><span class="info-value">${line}</span></div>`
   }
   chartModalTitle.value = title
@@ -268,43 +307,24 @@ function findPlanetEnById(data, id) {
 function onChartDisplayClick(e) {
   const data = chartData.value
   if (!data) return
-  let target = e.target
+  const target = e.target
   const container = chartDisplayRef.value
   const svg = container?.querySelector('svg')
   if (!svg || !svg.contains(target)) return
   e.preventDefault()
   e.stopPropagation()
-  for (; target && target !== svg; target = target.parentElement) {
-    const id = target.getAttribute?.('id')
-    const planetEn = findPlanetEnById(data, id)
-    if (planetEn) {
-      showPlanetInfo(planetEn)
+
+  const serialPlanetEn = planetEnFromSerialAncestors(target, svg)
+  if (serialPlanetEn) {
+    const found = findPlanetEnById(data, serialPlanetEn)
+    if (found) {
+      showPlanetInfo(found)
       return
     }
-    const planetMatch = (target.classList?.value || '').match(/planets_(\w+)/)
-    if (planetMatch) {
-      const found = findPlanetEnById(data, planetMatch[1])
-      if (found) {
-        showPlanetInfo(found)
-        return
-      }
-    }
-    if (target.classList?.contains('planet_font') || target.classList?.contains('planets_circle')) {
-      const g = target.closest?.('g[id]')
-      const found = findPlanetEnById(data, g?.getAttribute('id'))
-      if (found) {
-        showPlanetInfo(found)
-        return
-      }
-      const pm = (target.classList?.value || '').match(/planets_(\w+)/)
-      if (pm) {
-        const f = findPlanetEnById(data, pm[1])
-        if (f) showPlanetInfo(f)
-        return
-      }
-      return
-    }
-    const houseEl = target.closest?.('.house_id, .house_grid, .house_dark_grid')
+  }
+
+  for (let n = target; n && n !== svg; n = n.parentElement) {
+    const houseEl = n.closest?.('.house_id, .house_grid, .house_dark_grid')
     if (houseEl) {
       let hid = houseEl.getAttribute('shaft') ?? houseEl.getAttribute('serial')
       if (hid != null) {
@@ -323,48 +343,86 @@ function attachChartClickEvents() {
   if (!container || !data) return
   const svg = container.querySelector('svg')
   if (!svg) return
-  const fontStack = "'ixingpan_cn', 'ixingpan', sans-serif"
-  svg.style.fontFamily = fontStack
-  const textSelectors = 'text, tspan, .planet_font, .planet_font2, .text_font, .sign_font, .guardian_font, .must_symbo_font'
-  const applyFont = () => {
-    svg.querySelectorAll(textSelectors).forEach((el) => { el.style.fontFamily = fontStack })
-    svg.querySelectorAll('text, tspan').forEach((el) => { el.style.fontFamily = fontStack })
-  }
-  applyFont()
-  document.fonts.ready.then(applyFont)
-  document.fonts.load('16px ixingpan_cn').then(applyFont).catch(() => {})
-  document.fonts.load('16px ixingpan').then(applyFont).catch(() => {})
 
   container.style.cursor = 'default'
   container.style.pointerEvents = 'auto'
   svg.style.pointerEvents = 'auto'
-  svg.querySelectorAll('g[id]').forEach((g) => {
-    if (data.planet?.some((p) => p.planet_en === g.getAttribute('id'))) {
-      g.style.cursor = 'pointer'
-      g.querySelectorAll('*').forEach((el) => { el.style.cursor = 'pointer' })
-    }
+  svg.querySelectorAll('[serial^="p_"]').forEach((el) => {
+    el.style.cursor = 'pointer'
   })
-  svg.querySelectorAll('.planets_circle, .planet_font, .house_id, .house_grid, .house_dark_grid').forEach((el) => { el.style.cursor = 'pointer' })
+  svg
+    .querySelectorAll(
+      '.planets_circle, .planet_font, .planet_big_font, .planet_small_font, .house_id, .house_grid, .house_dark_grid'
+    )
+    .forEach((el) => {
+      el.style.cursor = 'pointer'
+    })
 }
 
+function refreshChartSvgUi() {
+  const data = chartData.value
+  const container = chartDisplayRef.value
+  if (!data || !container) return
+  const svg = container.querySelector('svg')
+  attachChartClickEvents()
+  if (svg) applyAstroChartSvgLabels(svg, data, chartLabelMode.value)
+}
+
+function setChartLabelMode(mode) {
+  chartLabelMode.value = mode
+  writeStoredChartLabelMode(mode)
+  scheduleChartSvgRefresh()
+}
+
+function scheduleChartSvgRefresh() {
+  nextTick(() => {
+    requestAnimationFrame(() => refreshChartSvgUi())
+  })
+}
+
+// immediate：首次进入时 svg 已存在，普通 watch 不会触发，导致未翻译
+// flush: 'post'：在 v-html 注入 DOM 之后再跑，避免 chartDisplayRef / svg 尚未就绪
 watch(
   () => chartData.value?.svg,
-  (svg) => {
-    if (!svg) return
-    nextTick(() => {
-      requestAnimationFrame(() => {
-        attachChartClickEvents()
-      })
-    })
-  }
+  (svgHtml) => {
+    if (!svgHtml) return
+    scheduleChartSvgRefresh()
+  },
+  { immediate: true, flush: 'post' }
 )
 </script>
 
 <style scoped>
 .chart-result { background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #eee; margin-top: 16px; }
+.chart-svg-wrap { border-bottom: 1px solid #eee; }
+.chart-label-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #fafafa;
+  border-bottom: 1px solid #eee;
+}
+.chart-label-toolbar-title { font-size: 13px; color: #666; margin-right: 4px; }
+.chart-label-btn {
+  padding: 6px 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  color: #555;
+}
+.chart-label-btn:hover { border-color: #667eea; color: #667eea; }
+.chart-label-btn.active {
+  border-color: #667eea;
+  background: #667eea;
+  color: #fff;
+}
 .chart-display { background: #fff; padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 280px; position: relative; }
 .chart-display :deep(svg) { max-width: 100%; height: auto; display: block; }
-.chart-display :deep(svg text), .chart-display :deep(svg tspan) { font-family: 'ixingpan_cn', 'ixingpan', sans-serif !important; }
 .chart-display-empty { min-height: 200px; }
 .detail-section-wrap { padding: 12px 15px 20px; border-top: 1px solid #e0e0e0; background: #fff; }
 .detail-actions { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
@@ -396,7 +454,6 @@ watch(
 .chart-modal-title { font-size: 1em; font-weight: 600; color: #667eea; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e0e0e0; }
 .chart-modal-inner .info-row { margin-bottom: 8px; }
 .chart-modal-inner .info-value { color: #333; font-size: 12px; line-height: 1.5; }
-.chart-modal-inner .info-value :deep(span[style*="font-family"]) { font-family: 'ixingpan_cn', 'ixingpan', sans-serif !important; }
 .chart-modal-inner .detail-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #e0e0e0; }
 .chart-modal-inner .detail-section-title { font-weight: 600; color: #667eea; margin-bottom: 8px; font-size: 12px; }
 </style>

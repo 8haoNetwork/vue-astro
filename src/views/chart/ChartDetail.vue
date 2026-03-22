@@ -71,6 +71,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { formatPlanetLabel } from '../../utils/astroChartDisplay.js'
 
 const props = defineProps({
   chartData: { type: Object, default: null }
@@ -133,9 +134,25 @@ const ASPECT_ANGLES = { 0: '合', 60: '六', 90: '刑', 120: '拱', 150: '补', 
 const ASPECT_CLASSES = { 0: 'conjunction', 60: 'sextile', 90: 'square', 120: 'trine', 150: 'quincunx', 180: 'opposition' }
 const ALLOWED_PLANETS = ['Sun', '太阳', 'Moon', '月亮', 'Mercury', '水星', 'Venus', '金星', 'Mars', '火星', 'Jupiter', '木星', 'Saturn', '土星', 'Uranus', '天王星', 'Neptune', '海王星', 'Pluto', '冥王星', 'Ascendant', '上升点', 'AC', 'North Node', '北交点', 'True Node', 'Mean Node']
 
+/** 与星盘图一致用单字（日、月…），避免 planet_cn「太阳」取 charAt(0) 变成「太」 */
+function aspectPlanetShort(p, chartData) {
+  if (p.planet_en) {
+    const lbl = formatPlanetLabel(p.planet_en, 'zh', chartData)
+    if (lbl) return [...lbl][0]
+  }
+  return (p.planet_cn || p.planet_en || '?').charAt(0)
+}
+
 const aspectTableData = computed(() => {
   const list = planetList.value
-  const planets = list.filter((p) => ALLOWED_PLANETS.includes(p.planet_en || '') || ALLOWED_PLANETS.includes(p.planet_cn || '')).map((p) => ({ name: p.planet_cn || p.planet_en, short: (p.planet_cn || p.planet_en).charAt(0), code: p.planet_en }))
+  const chartData = { planet: list }
+  const planets = list
+    .filter((p) => ALLOWED_PLANETS.includes(p.planet_en || '') || ALLOWED_PLANETS.includes(p.planet_cn || ''))
+    .map((p) => ({
+      name: p.planet_cn || p.planet_en,
+      short: aspectPlanetShort(p, chartData),
+      code: p.planet_en
+    }))
   const aspectMap = {}
   list.forEach((planet) => {
     const p1 = planet.planet_cn || planet.planet_en

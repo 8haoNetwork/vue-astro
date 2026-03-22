@@ -69,6 +69,28 @@ function toBirthDt(dateStr, timeStr) {
   return `${dateStr} ${t}`.trim() || `${dateStr} 12:00:00`
 }
 
+function pad2(n) {
+  return String(n).padStart(2, '0')
+}
+
+/** 当前本地时间 YYYY-MM-DD HH:mm:ss，作推运 transit_dt 未填写时的默认值（不再与生日相同） */
+function formatNowLocalDateTime() {
+  const d = new Date()
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`
+}
+
+/**
+ * 推运时刻：表单有 transitDate 则用表单；否则用当前时间。
+ * @param {object} params
+ */
+function buildTransitDt(params) {
+  const { transitDate, transitTime } = params
+  if (transitDate != null && String(transitDate).trim() !== '') {
+    return toBirthDt(transitDate, transitTime)
+  }
+  return formatNowLocalDateTime()
+}
+
 /** 单点查询体 SinglePointQry */
 function buildSinglePointQry(params) {
   const { birthDate, birthTime, latitude, longitude, tz = 8 } = params
@@ -84,13 +106,14 @@ function buildSinglePointQry(params) {
 /** 双点查询体 DoublePointQry：user_list 为两人或 [出生, 推运]；userListOrder 'BA' 时顺序为 [B, A] */
 function buildDoublePointQry(params, userListOrder = 'AB') {
   const tz = Number(params.tz) || 8
-  // 单盘行运/月返/日返：只有 birthDate + transitDate（同一经纬度）
-  if (params.birthDate != null && params.transitDate != null && params.birthDateA == null) {
+  // 单盘行运/月返/日返：user_list[0] 出生，[1] 推运时刻（同一经纬度）；未填 transitDate 则推运为当前时间
+  if (params.birthDate != null && params.birthDateA == null) {
     const lat = Number(params.latitude)
     const lng = Number(params.longitude)
+    const secondDt = buildTransitDt(params)
     const userList = [
       { birth_dt: toBirthDt(params.birthDate, params.birthTime), latitude: lat, longitude: lng, tz },
-      { birth_dt: toBirthDt(params.transitDate, params.transitTime), latitude: lat, longitude: lng, tz }
+      { birth_dt: secondDt, latitude: lat, longitude: lng, tz }
     ]
     return { user_list: userList }
   }
@@ -120,14 +143,14 @@ function buildDoublePointQry(params, userListOrder = 'AB') {
   return { user_list: userList }
 }
 
-/** 单点+推运日 SpTransitDateQry */
+/** 单点+推运日 SpTransitDateQry（三限/次限/日弧/小限/法达等） */
 function buildSpTransitDateQry(params) {
-  const { birthDate, birthTime, latitude, longitude, transitDate, transitTime, tz = 8 } = params
+  const { birthDate, birthTime, latitude, longitude, tz = 8 } = params
   return {
     birth_dt: toBirthDt(birthDate, birthTime),
     longitude: Number(longitude),
     latitude: Number(latitude),
-    transit_dt: toBirthDt(transitDate || birthDate, transitTime),
+    transit_dt: buildTransitDt(params),
     tz: Number(tz) || 8,
     dst_auto: true
   }
@@ -136,12 +159,29 @@ function buildSpTransitDateQry(params) {
 /** 双点+推运日 DpTransitDateQry；userListOrder 'BA' 时 user_list 为 [B, A] */
 function buildDpTransitDateQry(params, userListOrder = 'AB') {
   const body = buildDoublePointQry(params, userListOrder)
-  const { transitDate, transitTime } = params
-  body.transit_dt = toBirthDt(transitDate || params.birthDateB, transitTime)
+  body.transit_dt = buildTransitDt(params)
   return body
 }
 
+/**
+ * ChartPreview 里可与 birth 等一起传入、并写入请求体的额外字段（与 OpenAPI 一致）。
+ * buildSinglePointQry 等不会自动带上 params 里其它键，须在此合并。
+ */
+const CHART_OPTIONAL_BODY_KEYS = [
+  'bodies',
+  'asteroids',
+  'virtual_bodies',
+  'render_mode'
+]
 
+function mergeOptionalChartBody(body, params) {
+  if (!params) return
+  for (const k of CHART_OPTIONAL_BODY_KEYS) {
+    if (params[k] !== undefined && params[k] !== null) {
+      body[k] = params[k]
+    }
+  }
+}
 
 /**
  * 统一请求星盘接口
@@ -171,6 +211,8 @@ export async function fetchChart(chartType, params) {
     default:
       throw new Error(`不支持的 schema: ${config.schema}`)
   }
+
+  mergeOptionalChartBody(body, params)
 
   const res = await apiClient.post(config.path, body)
   return res?.data ?? res

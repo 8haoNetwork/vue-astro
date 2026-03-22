@@ -98,7 +98,11 @@ export default {
     submit: '查询',
     loading: '查询中...',
     resultTitle: '星盘结果',
-    resultPlaceholder: '暂无结构化展示，请查看接口返回数据'
+    resultPlaceholder: '暂无结构化展示，请查看接口返回数据',
+    labelModeTitle: '盘内标签',
+    labelModeZh: '中文',
+    labelModeSymbol: '符号',
+    labelModeGroup: '星盘图标签显示方式'
   },
   // 紫微斗数
   ziwei: {
