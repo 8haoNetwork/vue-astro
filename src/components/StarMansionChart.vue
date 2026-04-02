@@ -130,7 +130,7 @@ import wei_huo_hu from './../assets/imgs/wei_huo_hu.svg'
 import ji_shui_bao from './../assets/imgs/ji_shui_bao.svg'
 import dou_mu_xie from './../assets/imgs/dou_mu_xie.svg'
 import niu_jin_niu from './../assets/imgs/niu_jin_niu.svg'
-import nü_tu_fu from './../assets/imgs/nü_tu_fu.svg'
+import nv_tu_fu from './../assets/imgs/nv_tu_fu.svg'
 import xu_ri_shu from './../assets/imgs/xu_ri_shu.svg'
 import wei_yue_yan from './../assets/imgs/wei_yue_yan.svg'
 import shi_huo_zhu from './../assets/imgs/shi_huo_zhu.svg'
@@ -174,7 +174,7 @@ export default {
       // 星宿SVG图片映射
       naksSvg: [
         jiao_mu_jiao, kang_jin_long, di_tu_he, fang_ri_tu, xin_yue_hu, wei_huo_hu, ji_shui_bao,
-        dou_mu_xie, nü_tu_fu, xu_ri_shu, wei_yue_yan, shi_huo_zhu, bi_shui_yu,
+        dou_mu_xie, nv_tu_fu, xu_ri_shu, wei_yue_yan, shi_huo_zhu, bi_shui_yu,
         kui_mu_lang, lou_jin_gou, wei_tu_zhi, mao_ri_ji, bi_yue_wu, zhi_huo_hou, shen_shui_yuan,
         jing_mu_an, gui_jin_yang, liu_tu_zhang, xing_ri_ma, zhang_yue_lu, yi_huo_she, zhen_shui_yin
       ],
