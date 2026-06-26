@@ -1,0 +1,405 @@
+/* 大六壬排盘 */
+
+.liuren-page {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0 12px 24px;
+}
+
+.liuren-meta-panel {
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.55;
+}
+
+.liuren-meta-panel .meta-digest {
+  font-size: 15px;
+  font-weight: 600;
+  color: #5c4a38;
+  margin-bottom: 8px;
+}
+
+.liuren-meta-panel .meta-row {
+  margin-bottom: 4px;
+}
+
+.liuren-meta-panel .meta-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.liuren-meta-panel .meta-tag {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #f3ebe3;
+  color: #7a5c42;
+}
+
+.liuren-meta-panel .meta-tag--static {
+  display: inline-block;
+}
+
+.liuren-meta-panel .meta-tag--clickable {
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.liuren-meta-panel .meta-tag--clickable:hover {
+  background: #ebe0d4;
+  color: #5c4a38;
+}
+
+.liuren-meta-panel .meta-tag--clickable.is-selected {
+  background: #6b5b4f;
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(107, 91, 79, 0.25);
+}
+
+.liuren-pillars {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0;
+  flex-wrap: wrap;
+}
+
+.liuren-pillar {
+  flex: 1;
+  min-width: 64px;
+  text-align: center;
+  padding: 6px 4px;
+  background: #faf8f6;
+  border-radius: 8px;
+  border: 1px solid #efe6df;
+}
+
+.liuren-pillar .pillar-gz {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.liuren-pillar .pillar-kw {
+  font-size: 11px;
+  color: #999;
+  margin-top: 2px;
+}
+
+.liuren-summary-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #666;
+}
+
+.liuren-pan-board {
+  margin-bottom: 12px;
+}
+
+.pan-board-head {
+  margin-bottom: 6px;
+}
+
+.pan-board-head .liuren-section-title {
+  margin-bottom: 2px;
+}
+
+.pan-board-headline {
+  margin: 0;
+  font-size: 11px;
+  color: #999;
+  line-height: 1.4;
+}
+
+.pan-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.pan-shell-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+}
+
+.pan-compass {
+  font-size: 10px;
+  color: #c4b8aa;
+  font-weight: 600;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.pan-compass--s,
+.pan-compass--n {
+  line-height: 1;
+}
+
+.pan-compass--e,
+.pan-compass--w {
+  width: 12px;
+  text-align: center;
+  writing-mode: vertical-rl;
+  letter-spacing: 2px;
+}
+
+.liuren-pan-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 66px);
+  grid-template-areas:
+    "si wu wei shen"
+    "chen center center you"
+    "mao center center xu"
+    "yin chou zi hai";
+  gap: 3px;
+  min-width: 0;
+}
+
+.pan-center-void {
+  grid-area: center;
+  border-radius: 4px;
+  background: #faf8f5;
+  border: 1px dashed #e8e0d8;
+}
+
+.liuren-ke-chuan {
+  display: grid;
+  gap: 12px;
+}
+
+.liuren-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #5c4a38;
+  margin: 0 0 8px;
+}
+
+.liuren-ke-table,
+.liuren-chuan-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.liuren-ke-table th,
+.liuren-chuan-table th,
+.liuren-ke-table td,
+.liuren-chuan-table td {
+  border: 1px solid #efe6df;
+  padding: 8px 6px;
+  text-align: center;
+}
+
+.liuren-ke-table th,
+.liuren-chuan-table th {
+  background: #faf8f6;
+  color: #666;
+  font-weight: 500;
+}
+
+.liuren-ke-table td.tian-cell,
+.liuren-chuan-table td.zhi-cell {
+  font-weight: 600;
+  color: #333;
+}
+
+.liuren-chuan-table td.jiang-cell {
+  color: #8b6914;
+}
+
+.liuren-jinkou-table tr.is-yong td {
+  background: #f8f4ec;
+}
+
+.liuren-jinkou-table tr.is-yong td:first-child {
+  font-weight: 600;
+  color: #6b5b4f;
+}
+
+.liuren-click-row {
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.liuren-click-row:hover td {
+  background: #faf6f2;
+}
+
+.liuren-click-row.is-selected td {
+  background: #f3ebe3;
+}
+
+.liuren-detail-panel {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #faf8f6;
+  border: 1px solid #efe6df;
+}
+
+.liuren-inline-detail {
+  margin-top: 10px;
+  margin-bottom: 4px;
+  animation: liuren-detail-in 0.2s ease;
+}
+
+@keyframes liuren-detail-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.liuren-detail-panel .palace-detail-hint,
+.liuren-detail-panel .palace-detail-empty {
+  margin: 0;
+  font-size: 13px;
+  color: #999;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.liuren-detail-panel .palace-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.liuren-detail-panel .palace-detail-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8a7a6a;
+  letter-spacing: 0.02em;
+}
+
+.liuren-detail-panel .palace-detail-level {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #ece3dc;
+  color: #666;
+}
+
+.liuren-detail-panel.geju--ji .palace-detail-level {
+  background: #e8f2e6;
+  color: #3d6b3a;
+}
+
+.liuren-detail-panel.geju--xiong .palace-detail-level {
+  background: #f8e8e8;
+  color: #a04040;
+}
+
+.liuren-detail-panel.geju--ping .palace-detail-level {
+  background: #ece8e4;
+  color: #666;
+}
+
+.liuren-detail-panel .palace-detail-title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #4a3c30;
+  line-height: 1.4;
+}
+
+.liuren-detail-panel .palace-detail-summary {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.55;
+}
+
+.liuren-detail-panel .palace-detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.liuren-detail-panel .palace-detail-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #efe6df;
+  color: #7a6a5a;
+}
+
+.liuren-detail-panel.geju--xiong .palace-detail-tag {
+  background: #f5e8e8;
+  color: #8a5050;
+}
+
+.liuren-detail-panel.geju--ji .palace-detail-tag {
+  background: #e8f0e6;
+  color: #4a6a44;
+}
+
+.liuren-detail-panel .palace-detail-scenarios {
+  margin-bottom: 10px;
+}
+
+.liuren-detail-panel .palace-detail-section-label {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 4px;
+}
+
+.liuren-detail-panel .palace-detail-scenario-text {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.liuren-detail-panel .scenario-sep {
+  margin: 0 4px;
+  color: #ccc;
+}
+
+.liuren-detail-panel .palace-detail-meta {
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #efe6df;
+}
+
+.liuren-detail-panel .palace-detail-meta-line {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.liuren-detail-panel .palace-detail-meta-line + .palace-detail-meta-line {
+  margin-top: 2px;
+}
+
+.liuren-detail-panel .palace-detail-desc {
+  margin: 0;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.65;
+  white-space: pre-line;
+}

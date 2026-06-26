@@ -5,6 +5,7 @@
  */
 
 import { apiClient } from './api'
+import { resolveRequestLang } from '../utils/lang'
 
 const CHART_BASE = '/chart'
 
@@ -213,6 +214,8 @@ export async function fetchChart(chartType, params) {
   }
 
   mergeOptionalChartBody(body, params)
+
+  body.lang = resolveRequestLang(params?.lang)
 
   const res = await apiClient.post(config.path, body)
   return res?.data ?? res

@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
     <header class="app-header">
+      <AppLangSelector class="app-header__lang" />
       <h1 class="app-title">ApiWorks Astro Demo</h1>
       <nav class="main-nav">
         <router-link to="/">首页</router-link>
@@ -10,6 +11,8 @@
         <router-link to="/ziwei">紫薇</router-link>
         <router-link to="/star">星宿</router-link>
         <router-link to="/bazi">生辰</router-link>
+        <router-link to="/qimen">奇门</router-link>
+        <router-link to="/liuren">六壬</router-link>
       </nav>
     </header>
     <main class="app-main">
@@ -24,6 +27,7 @@
 </template>
 
 <script setup>
+import AppLangSelector from './components/AppLangSelector.vue'
 </script>
 
 <style scoped>
@@ -34,15 +38,24 @@
 }
 
 .app-header {
+  position: relative;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 1rem 2rem;
+  padding: 0.75rem 2rem 1rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+.app-header__lang {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.65rem;
+  z-index: 2;
+}
+
 .app-title {
-  margin: 0 0 0.75rem 0;
-  font-size: 0.95rem;
+  margin: 0 0 0.6rem 0;
+  padding-right: 4.5rem;
+  font-size: 0.85rem;
   font-weight: 500;
   text-align: center;
   color: rgba(255, 255, 255, 0.85);
@@ -104,22 +117,28 @@
 
 @media (max-width: 768px) {
   .app-header {
-    padding: 1rem;
+    padding: 0.65rem 0.75rem 0.85rem;
   }
-  
+
+  .app-header__lang {
+    top: 0.4rem;
+    right: 0.5rem;
+  }
+
   .app-title {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    padding-right: 3.8rem;
   }
-  
+
   .main-nav {
     gap: 0.5rem;
   }
-  
+
   .main-nav a {
     padding: 0.4rem 0.8rem;
     font-size: 0.8rem;
   }
-  
+
   .app-main {
     padding: 0rem;
   }

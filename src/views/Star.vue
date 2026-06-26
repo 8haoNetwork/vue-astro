@@ -145,10 +145,12 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { fetchStar } from '../services/naks'
-import { zhCN, enUS, i18n } from '../i18n'
+import { zhCN, zhTW, enUS, i18n } from '../i18n'
+import { useAppLang } from '../composables/useAppLang'
 import StarMansionChart from '../components/StarMansionChart.vue'
 
 const { t } = useI18n()
+const { appLang } = useAppLang()
 
 // 设置默认值：日期为1999-01-02，时间为当前时间
 const now = new Date()
@@ -162,12 +164,16 @@ const activeTab = ref('natal') // 默认显示本命星宿
 // 翻译星宿名称：英文简写 -> 对应语言的名称
 const getStarName = (name) => {
   if (!name) return ''
-  // 根据当前语言决定显示中文还是英文
-  if (i18n.global.locale.value === 'zh-CN') {
-    // 中文模式：显示中文名称
+  // 根据当前语言决定显示哪种语言的名称
+  const locale = i18n.global.locale.value
+  if (locale === 'zh-TW') {
+    // 繁体中文模式
+    return zhTW.starNames[name] || name
+  } else if (locale === 'zh-CN') {
+    // 简体中文模式
     return zhCN.starNames[name] || name
   } else {
-    // 英文模式：显示英文名称
+    // 英文模式
     return enUS.starNames[name] || name
   }
 }
@@ -175,7 +181,10 @@ const getStarName = (name) => {
 // 翻译关系类型名称
 const getRelationTypeName = (type) => {
   if (!type) return ''
-  if (i18n.global.locale.value === 'zh-CN') {
+  const locale = i18n.global.locale.value
+  if (locale === 'zh-TW') {
+    return zhTW.relationTypes[type] || type
+  } else if (locale === 'zh-CN') {
     return zhCN.relationTypes[type] || type
   } else {
     return enUS.relationTypes[type] || type
@@ -206,7 +215,8 @@ const getRelationTypeName = (type) => {
           target_dt: null,
           is_solar_time: false,
           is_late_zi: false,
-          niu_xiu_handle: 'nvxiu'
+          niu_xiu_handle: 'nvxiu',
+          lang: appLang.value // 使用后端格式的语言代码
         }
         
         // 调用API服务

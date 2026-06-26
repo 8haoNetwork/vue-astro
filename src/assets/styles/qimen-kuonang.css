@@ -1,0 +1,97 @@
+/* 括囊飞盘 — 中列三行等高 */
+
+.qimen-kuonang-cell {
+  display: grid;
+  grid-template-columns: max-content 1fr max-content;
+  /* 顶留白 + 三行主体；应期/八卦绝对贴底 */
+  grid-template-rows: 5px repeat(3, 28px);
+  align-content: start;
+  column-gap: 2px;
+  row-gap: 3px;
+  padding-top: 4px;
+}
+
+.kuonang-r2 { grid-row: 2; }
+.kuonang-r3 { grid-row: 3; }
+.kuonang-r4 { grid-row: 4; }
+
+.kuonang-col-center {
+  grid-column: 2;
+  justify-self: center;
+  align-self: center;
+  text-align: center;
+}
+
+.kuonang-col-right {
+  grid-column: 3;
+  justify-self: end;
+}
+
+/* 右上：空/马 + 四害 */
+.qimen-kuonang-cell .kuonang-markers {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  max-width: 50%;
+  z-index: 3;
+}
+
+/* 左：三暗干 — 占神星区两行，顶对齐 */
+.qimen-kuonang-cell .kuonang-left-top {
+  grid-column: 1;
+  grid-row: 2 / 4;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-self: start;
+  justify-self: start;
+}
+
+.qimen-kuonang-cell .kuonang-an-gan {
+  font-size: 9px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* 左：门旁注 — 与八门同行 */
+.qimen-kuonang-cell .kuonang-men-trail {
+  grid-column: 1;
+  grid-row: 4;
+  font-size: 9px;
+  line-height: 1.2;
+  font-weight: normal;
+  color: #999;
+  white-space: nowrap;
+  align-self: center;
+  justify-self: start;
+}
+
+/* 中列：八神 + 神旁注 同占一行 */
+.qimen-kuonang-cell .kuonang-shen-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  max-height: 24px;
+  overflow: hidden;
+}
+
+.qimen-kuonang-cell .kuonang-shen-block .cell-shen {
+  line-height: 1.05;
+  font-size: 12px;
+}
+
+.qimen-kuonang-cell .kuonang-shen-block .kuonang-shen-trail {
+  font-size: 8px;
+  line-height: 1;
+  font-weight: normal;
+  color: #999;
+}
+
+.qimen-kuonang-cell .cell-jiu-xing,
+.qimen-kuonang-cell .cell-men {
+  line-height: 1.15;
+  max-height: 24px;
+  overflow: hidden;
+}

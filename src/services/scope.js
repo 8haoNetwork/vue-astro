@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from './api'
+import { resolveRequestLang } from '../utils/lang'
 
 const SCOPE_UID = 'default'
 
@@ -42,7 +43,8 @@ export function buildScopeBody(params) {
   })
   return {
     birth_point: point(birth_dt),
-    transit_point: point(transit_dt)
+    transit_point: point(transit_dt),
+    lang: resolveRequestLang(params?.lang)
   }
 }
 

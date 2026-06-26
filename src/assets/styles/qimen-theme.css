@@ -1,0 +1,105 @@
+/* 奇门配色 — 五行 + 吉凶 + 象意（淡底浓字） */
+
+.qimen-page {
+  --qm-mu: #2d7a4f;
+  --qm-huo: #c43d2a;
+  --qm-huo-ding: #8b3a8b;
+  --qm-tu: #9a7b2e;
+  --qm-jin: #5c6570;
+  --qm-shui: #1e4d7b;
+  --qm-ji: #2d8a4e;
+  --qm-xiong: #c62828;
+  --qm-zhong: #7b4b9a;
+  --qm-yang: #c43d2a;
+  --qm-yin: #1e4d7b;
+}
+
+/* —— 天干 / 地支字色 —— */
+.qm-gan-text .gan--mu,
+.qimen-pillar .gan--mu { color: var(--qm-mu); }
+.qm-gan-text .gan--huo,
+.qimen-pillar .gan--huo { color: var(--qm-huo); }
+.qm-gan-text .gan--huo-ding,
+.qimen-pillar .gan--huo-ding { color: var(--qm-huo-ding); }
+.qm-gan-text .gan--tu,
+.qimen-pillar .gan--tu { color: var(--qm-tu); }
+.qm-gan-text .gan--jin,
+.qimen-pillar .gan--jin { color: var(--qm-jin); }
+.qm-gan-text .gan--shui,
+.qimen-pillar .gan--shui { color: var(--qm-shui); }
+
+.qm-gan-text .zhi--mu { color: #3d8f5c; }
+.qm-gan-text .zhi--huo { color: #d45540; }
+.qm-gan-text .zhi--tu { color: #b08d3a; }
+.qm-gan-text .zhi--jin { color: #6e7882; }
+.qm-gan-text .zhi--shui { color: #3a6a99; }
+
+/* 中列默认字色（神、星；门见下方吉凶色） */
+.qimen-palace-cell .cell-shen,
+.qimen-palace-cell .cell-jiu-xing {
+  color: #5c4a3a;
+  font-weight: 600;
+}
+
+.qimen-palace-cell .cell-men:not(.men--ji):not(.men--xiong):not(.men--zhong),
+.qimen-palace-cell .qimen-jinhan-men:not(.men--ji):not(.men--xiong):not(.men--zhong) {
+  color: #5c4a3a;
+  font-weight: 600;
+}
+
+/* —— 八门吉凶 —— */
+.qimen-palace-cell .cell-men.men--ji,
+.qimen-palace-cell .qimen-jinhan-men.men--ji {
+  color: var(--qm-ji);
+  font-weight: 600;
+}
+
+.qimen-palace-cell .cell-men.men--xiong,
+.qimen-palace-cell .qimen-jinhan-men.men--xiong {
+  color: var(--qm-xiong);
+  font-weight: 600;
+}
+
+.qimen-palace-cell .cell-men.men--zhong,
+.qimen-palace-cell .qimen-jinhan-men.men--zhong {
+  color: var(--qm-zhong);
+  font-weight: 600;
+}
+
+/* 值使门高亮（覆盖吉凶色） */
+.qimen-kuonang-cell .cell-men.men-zhishi {
+  color: #2b6cb0;
+  font-weight: 600;
+}
+
+/* —— 九星 —— */
+.qimen-palace-cell .star--shui { color: var(--qm-shui); font-weight: 600; }
+.qimen-palace-cell .star--tu { color: var(--qm-tu); font-weight: 600; }
+.qimen-palace-cell .star--tu-deep { color: #8a6e22; font-weight: 600; }
+.qimen-palace-cell .star--tu-light { color: #b08d3a; font-weight: 600; }
+.qimen-palace-cell .star--mu { color: var(--qm-mu); font-weight: 600; }
+.qimen-palace-cell .star--mu-light { color: #3d8f5c; font-weight: 600; }
+.qimen-palace-cell .star--jin { color: var(--qm-jin); font-weight: 600; }
+.qimen-palace-cell .star--jin-light { color: #7a8490; font-weight: 600; }
+.qimen-palace-cell .star--huo { color: var(--qm-huo); font-weight: 600; }
+
+/* —— 八神 —— */
+.qimen-palace-cell .shen--zhifu { color: #b8860b; font-weight: 600; }
+.qimen-palace-cell .shen--tengshe { color: #7b4b9a; font-weight: 600; }
+.qimen-palace-cell .shen--taiyin { color: #5a7a9a; font-weight: 600; }
+.qimen-palace-cell .shen--liuhe { color: var(--qm-mu); font-weight: 600; }
+.qimen-palace-cell .shen--baihu { color: var(--qm-jin); font-weight: 600; }
+.qimen-palace-cell .shen--xuanwu { color: var(--qm-shui); font-weight: 600; }
+.qimen-palace-cell .shen--jiudi { color: var(--qm-tu); font-weight: 600; }
+.qimen-palace-cell .shen--jiutian { color: var(--qm-huo); font-weight: 600; }
+
+/* —— 元信息：局数阴阳 —— */
+.qimen-meta-panel .ju--yang {
+  color: var(--qm-yang);
+  font-weight: 600;
+}
+
+.qimen-meta-panel .ju--yin {
+  color: var(--qm-yin);
+  font-weight: 600;
+}

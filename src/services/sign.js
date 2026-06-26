@@ -4,8 +4,13 @@
  */
 
 import { apiClient } from './api'
+import { resolveRequestLang } from '../utils/lang'
 
 const SIGN_UID = 'default'
+
+function langQueryParams(explicitLang) {
+  return { lang: resolveRequestLang(explicitLang) }
+}
 
 
 
@@ -25,8 +30,8 @@ function unwrap(res) {
  * 星座列表 GET /signs
  * @returns {Promise<Array>} SignVo[]
  */
-export async function fetchSigns() {
-  const res = await apiClient.get('/signs')
+export async function fetchSigns(explicitLang) {
+  const res = await apiClient.get('/signs', { params: langQueryParams(explicitLang) })
   const data = unwrap(res)
   return Array.isArray(data) ? data : (data ? [data] : [])
 }
@@ -36,8 +41,8 @@ export async function fetchSigns() {
  * @param {number} signId 1-12
  * @returns {Promise<object>} SignVo
  */
-export async function fetchSignDetail(signId) {
-  const res = await apiClient.get(`/signs/${signId}`)
+export async function fetchSignDetail(signId, explicitLang) {
+  const res = await apiClient.get(`/signs/${signId}`, { params: langQueryParams(explicitLang) })
   return unwrap(res) ?? null
 }
 
@@ -46,8 +51,8 @@ export async function fetchSignDetail(signId) {
  * @param {number} signId 1-12
  * @returns {Promise<object>} dict int -> SignCompatVo[]，或 { [signId]: SignCompatVo[] }
  */
-export async function fetchSignCompat(signId) {
-  const res = await apiClient.get(`/signs/${signId}/compat`)
+export async function fetchSignCompat(signId, explicitLang) {
+  const res = await apiClient.get(`/signs/${signId}/compat`, { params: langQueryParams(explicitLang) })
   return unwrap(res) ?? {}
 }
 
@@ -71,7 +76,8 @@ export function buildMySignBody(params) {
     longitude: Number(longitude),
     latitude: Number(latitude),
     tz: Number(tz) || 8,
-    dst_auto: !!dst_auto
+    dst_auto: !!dst_auto,
+    lang: resolveRequestLang(params?.lang)
   }
 }
 

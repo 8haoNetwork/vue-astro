@@ -172,6 +172,9 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { fetchSigns, fetchSignDetail, fetchSignCompat, fetchMySign } from '../services/sign'
+import { useAppLang } from '../composables/useAppLang'
+
+const { appLang } = useAppLang()
 
 const signTabs = [
   { type: 'list', label: '星座列表' },
@@ -429,6 +432,19 @@ function categoryClass(label) {
 
 watch(activeTab, (tab) => {
   if (tab === 'compat' && signList.value.length && compatSignId.value) loadCompat()
+})
+
+watch(appLang, () => {
+  if (activeTab.value === 'list') {
+    loadSignList()
+    if (selectedSignId.value) {
+      selectSign({ id: selectedSignId.value })
+    }
+  } else if (activeTab.value === 'compat' && compatSignId.value) {
+    loadCompat()
+  } else if (activeTab.value === 'mine' && mySignResult.value) {
+    loadMySign()
+  }
 })
 
 onMounted(() => {

@@ -1,4 +1,5 @@
 import { apiClient } from './api'
+import { resolveRequestLang } from '../utils/lang'
 
 /**
  * 规范时间为 HH:mm:ss
@@ -65,6 +66,8 @@ export function buildZiweiRequestBody(params) {
   if (params.custom_transforms) {
     body.custom_transforms = params.custom_transforms
   }
+
+  body.lang = resolveRequestLang(params?.lang)
 
   return body
 }

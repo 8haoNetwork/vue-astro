@@ -8,6 +8,8 @@ import Bazi from '../views/bazi/index.vue'
 import BaziMatch from '../views/bazi/BaziMatch.vue'
 import ChartIndex from '../views/chart/index.vue'
 import ChartPreview from '../views/chart/ChartPreview.vue'
+import Qimen from '../views/qimen/index.vue'
+import Liuren from '../views/liuren/index.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -56,6 +58,16 @@ const router = createRouter({
       path: '/chart/preview',
       name: 'ChartPreview',
       component: ChartPreview
+    },
+    {
+      path: '/qimen',
+      name: 'Qimen',
+      component: Qimen
+    },
+    {
+      path: '/liuren',
+      name: 'Liuren',
+      component: Liuren
     }
   ]
 })
