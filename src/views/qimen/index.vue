@@ -142,10 +142,6 @@
               <input v-model="shared.isSolarTime" type="checkbox">
               真太阳时
             </label>
-            <label class="checkbox-label">
-              <input v-model="shared.withLiuren" type="checkbox">
-              奇门穿壬
-            </label>
           </div>
         </div>
 
@@ -223,7 +219,6 @@ const activeTab = ref('shijia')
 const shared = reactive({
   longitude: 116.4074,
   isSolarTime: true,
-  withLiuren: false,
   tz: 8
 })
 
@@ -299,7 +294,6 @@ function buildForm() {
       feipanStyle: shijiaForm.paiMethod === 'feipan' ? shijiaForm.feipanStyle : undefined,
       longitude: shared.longitude,
       isSolarTime: shared.isSolarTime,
-      withLiuren: shared.withLiuren,
       tz: shared.tz
     }
   }
@@ -312,7 +306,6 @@ function buildForm() {
       paiMethod: 'zhuanpan',
       longitude: shared.longitude,
       isSolarTime: shared.isSolarTime,
-      withLiuren: shared.withLiuren,
       tz: shared.tz
     }
   }

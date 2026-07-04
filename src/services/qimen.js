@@ -256,8 +256,7 @@ export function buildQimenBody(form) {
     tz: form.tz ?? 8,
     dst_auto: form.dstAuto !== false,
     type,
-    lang,
-    with_liuren: form.withLiuren === true
+    lang
   }
 
   if (form.longitude != null && form.longitude !== '') {
