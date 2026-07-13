@@ -284,12 +284,12 @@ export function buildQimenBody(form) {
 }
 
 /**
- * POST /sanshi/qimen
+ * POST /qimen
  * @returns {Promise<{ code: number, msg?: string, data?: object, exe_time?: number }>}
  */
 export async function fetchQimen(form) {
   const body = buildQimenBody(form)
-  return apiClient.post('/sanshi/qimen', body)
+  return apiClient.post('/qimen', body)
 }
 
 export function getJuMethodOptions(type) {

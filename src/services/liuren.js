@@ -69,10 +69,10 @@ export function buildLiurenBody(form) {
 }
 
 /**
- * POST /sanshi/liuren
+ * POST /liuren
  * @returns {Promise<{ code: number, msg?: string, data?: object, exe_time?: number }>}
  */
 export async function fetchLiuren(form) {
   const body = buildLiurenBody(form)
-  return apiClient.post('/sanshi/liuren', body)
+  return apiClient.post('/liuren', body)
 }
