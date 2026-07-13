@@ -1,6 +1,6 @@
 # Vue Astro
 
-基于 [Vue 3](https://vuejs.org/) + [Vite](https://vitejs.dev/) 的占星与命理演示项目，对接 [ApiWorks 星盘 API](https://astro.apiworks.com)，实现星座、运势、星盘、紫微斗数、星宿、八字等功能的展示与查询。
+基于 [Vue 3](https://vuejs.org/) + [Vite](https://vitejs.dev/) 的占星与命理演示项目，对接 [ApiWorks 星盘 API](https://www.apiworks.com)，实现星座、运势、星盘、紫微斗数、星宿、八字、奇门遁甲、六壬等功能的展示与查询。
 
 ## 功能概览
 
@@ -13,12 +13,27 @@
 | 紫微 | `/ziwei` | 紫微斗数本命盘与完整运限盘 |
 | 星宿 | `/star` | 本命/值日星宿及关系分析 |
 | 生辰 | `/bazi` | 八字本命、大运流年、合盘匹配 |
+| 奇门 | `/qimen` | 奇门遁甲排盘（时家 / 日家 / 山向） |
+| 六壬 | `/liuren` | 大六壬、金口诀排盘 |
+
+### 奇门遁甲（`/qimen`）
+
+- **时家奇门**：拆补、置闰、茅山、阴盘等定局法；支持转盘与飞盘，飞盘可选默认、鸣法、括囊、法窍、阴盘等子流派
+- **日家奇门**：金函、传统定局；日家金函盘支持黄黑道展示
+- **山向奇门**：按年份与二十四山（含上 / 中 / 下三元）起局
+- 支持经度、真太阳时、时区；排盘结果含局信息、九宫格与宫位详情
+
+### 六壬（`/liuren`）
+
+- **大六壬**：天贵 / 地贵贵人起法，天地盘四课三传展示
+- **金口诀**：十二地分可选
+- 支持经度、真太阳时、时区；盘局支持点击交互查看课传与宫位详情
 
 ## 技术栈
 
 - **Vue 3**（Composition API）
 - **Vue Router 4**
-- **Vue I18n 9**（中/英）
+- **Vue I18n 9**（简体中文 / 繁体中文 / 英文）
 - **Axios**（API 请求）
 - **Vite 6**（构建与开发）
 
@@ -56,34 +71,46 @@ npm run preview
 | 变量名 | 说明 |
 |--------|------|
 | `VITE_API_BASE_URL` | 接口基础地址，指向你的 ApiWorks 星盘 API 地址 |
-| `VITE_APP_ID` | 应用 ID（鉴权请求头 X-App-Id） |
-| `VITE_APP_KEY` | 应用 Key（鉴权请求头 X-App-Key） |
+| `VITE_APP_ID` | 应用 ID（鉴权请求头 `X-App-Id`） |
+| `VITE_APP_KEY` | 应用 Key（鉴权请求头 `X-App-Key`） |
 
-请前往 [apiworks.com](https://astro.apiworks.com) 申请测试或正式证书 Key，配置后即可正常调用接口。
+请前往 [apiworks.com](https://www.apiworks.com) 申请测试或正式证书 Key，配置后即可正常调用接口。
+
+可参考根目录 `.env.example` 填写默认 API 地址。
 
 ## 项目结构（简要）
 
 ```
 src/
 ├── App.vue              # 根布局、导航、页脚
-├── main.js               # 入口，挂载 Vue / Router / i18n
-├── router/index.js       # 路由配置
-├── i18n/                 # 多语言（zh-CN、en-US）
-├── assets/               # 全局样式、图表样式
-├── components/           # 公共组件（如 ZiweiPalaceCell、StarMansionChart）
-├── composables/          # 组合式逻辑（useBazi、useZiweiI18n）
-├── services/             # API 封装（api、sign、scope、chart、ziwei、bazi）
-├── views/                # 页面
+├── main.js              # 入口，挂载 Vue / Router / i18n
+├── router/index.js      # 路由配置
+├── i18n/                # 多语言（zh-CN、zh-TW、en-US）
+├── assets/              # 全局样式、星宿图标、奇门主题样式
+├── components/          # 公共组件
+│   ├── ZiweiPalaceCell.vue, StarMansionChart.vue, AppLangSelector.vue
+│   ├── qimen/           # 奇门九宫格、宫位详情、黄黑道等
+│   └── liuren/          # 六壬天地盘、课传、详情面板
+├── composables/         # 组合式逻辑（useBazi、useZiweiI18n、useQimen、useLiuren 等）
+├── services/            # API 封装
+│   ├── api.js           # Axios 客户端与鉴权
+│   ├── sign.js, scope.js, chart.js, ziwei.js, bazi.js, naks.js
+│   ├── qimen.js         # 奇门请求体与山向、定局法配置
+│   └── liuren.js        # 六壬请求体与术式选项
+├── views/               # 页面
 │   ├── Home.vue
 │   ├── Sign.vue, Scope.vue, Ziwei.vue, Star.vue
-│   ├── bazi/             # 八字相关页
-│   └── chart/            # 星盘相关页
-└── styles/               # 紫微盘等样式
+│   ├── qimen/index.vue  # 奇门遁甲
+│   ├── liuren/index.vue # 六壬
+│   ├── bazi/            # 八字相关页
+│   └── chart/           # 星盘相关页
+├── styles/              # 紫微盘等样式
+└── utils/               # 语言、星盘展示等工具
 ```
 
 ## 开源与致谢
 
-本项目为开源演示，数据与接口能力由 [ApiWorks](https://astro.apiworks.com) 提供。
+本项目为开源演示，数据与接口能力由 [ApiWorks](https://www.apiworks.com) 提供。
 
 ## License
 
