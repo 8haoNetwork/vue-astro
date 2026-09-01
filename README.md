@@ -1,6 +1,6 @@
 # Vue Astro
 
-基于 [Vue 3](https://vuejs.org/) + [Vite](https://vitejs.dev/) 的占星与命理演示项目，对接 [ApiWorks 星盘 API](https://www.apiworks.com)，实现星座、运势、星盘、紫微斗数、星宿、八字、奇门遁甲、六壬等功能的展示与查询。
+基于 [Vue 3](https://vuejs.org/) + [Vite](https://vitejs.dev/) 的占星与命理演示项目，对接 [ApiWorks 星盘 API](https://www.apiworks.com)，实现星座、运势、星盘、紫微斗数、星宿、八字、奇门遁甲、六壬、七政四余等功能的展示与查询。
 
 ## 功能概览
 
@@ -15,6 +15,7 @@
 | 生辰 | `/bazi` | 八字本命、大运流年、合盘匹配 |
 | 奇门 | `/qimen` | 奇门遁甲排盘（时家 / 日家 / 山向） |
 | 六壬 | `/liuren` | 大六壬、金口诀排盘 |
+| 政余 | `/qizheng` | 七政四余本命圆盘与行运；命度/垣殿/喜忌格解读 |
 
 ### 奇门遁甲（`/qimen`）
 
@@ -28,6 +29,13 @@
 - **大六壬**：天贵 / 地贵贵人起法，天地盘四课三传展示
 - **金口诀**：十二地分可选
 - 支持经度、真太阳时、时区；盘局支持点击交互查看课传与宫位详情
+
+### 政余（`/qizheng`）
+
+- **本命**：`POST /qizheng/natal`，圆盘（地支 / 十二宫 / 十一曜 / 二十八宿量天尺）+ 十一曜表 + 命度解读
+- **行运**：`POST /qizheng/chart`，叠加流十一曜、当前诸限与按岁限表
+- 请求体对齐后端 `QizhengNatalQry` / `QizhengQry`：`birth_dt`、`gender`、`lang`、`is_solar_time`、`is_late_zi`、经纬度；行运可传 `target_dt`
+- 本命 / 行运均只读后端接口；无数据或请求失败时显示错误，不再使用本地演示盘
 
 ## 技术栈
 
@@ -66,7 +74,9 @@ npm run preview
 
 ### 环境变量
 
-在项目根目录创建 `.env`（或 `.env.local`），按需配置：
+`npm run dev` 使用 `--mode dev`，会读取根目录 `.env.dev`（同名变量会覆盖 `.env`）。构建仍走 `.env.production` / `.env`。
+
+| 变量名 | 说明 |
 
 | 变量名 | 说明 |
 |--------|------|
@@ -90,18 +100,21 @@ src/
 ├── components/          # 公共组件
 │   ├── ZiweiPalaceCell.vue, StarMansionChart.vue, AppLangSelector.vue
 │   ├── qimen/           # 奇门九宫格、宫位详情、黄黑道等
-│   └── liuren/          # 六壬天地盘、课传、详情面板
+│   ├── liuren/          # 六壬天地盘、课传、详情面板
+│   └── qizheng/         # 政余圆盘、十一曜表、解读
 ├── composables/         # 组合式逻辑（useBazi、useZiweiI18n、useQimen、useLiuren 等）
 ├── services/            # API 封装
 │   ├── api.js           # Axios 客户端与鉴权
 │   ├── sign.js, scope.js, chart.js, ziwei.js, bazi.js, naks.js
 │   ├── qimen.js         # 奇门请求体与山向、定局法配置
-│   └── liuren.js        # 六壬请求体与术式选项
+│   ├── liuren.js        # 六壬请求体与术式选项
+│   └── qizheng.js       # 七政四余本命 / 行运
 ├── views/               # 页面
 │   ├── Home.vue
 │   ├── Sign.vue, Scope.vue, Ziwei.vue, Star.vue
 │   ├── qimen/index.vue  # 奇门遁甲
 │   ├── liuren/index.vue # 六壬
+│   ├── qizheng/index.vue # 政余（七政四余）
 │   ├── bazi/            # 八字相关页
 │   └── chart/           # 星盘相关页
 ├── styles/              # 紫微盘等样式

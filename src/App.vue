@@ -13,6 +13,7 @@
         <router-link to="/bazi">生辰</router-link>
         <router-link to="/qimen">奇门</router-link>
         <router-link to="/liuren">六壬</router-link>
+        <router-link to="/qizheng">政余</router-link>
       </nav>
     </header>
     <main class="app-main">

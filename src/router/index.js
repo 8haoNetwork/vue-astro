@@ -10,6 +10,7 @@ import ChartIndex from '../views/chart/index.vue'
 import ChartPreview from '../views/chart/ChartPreview.vue'
 import Qimen from '../views/qimen/index.vue'
 import Liuren from '../views/liuren/index.vue'
+import Qizheng from '../views/qizheng/index.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -68,6 +69,11 @@ const router = createRouter({
       path: '/liuren',
       name: 'Liuren',
       component: Liuren
+    },
+    {
+      path: '/qizheng',
+      name: 'Qizheng',
+      component: Qizheng
     }
   ]
 })
