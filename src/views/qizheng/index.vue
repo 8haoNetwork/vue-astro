@@ -105,16 +105,18 @@
       <p class="birth-info">
         {{ $t('qizheng.birthInfo') }}：{{ result.birth_dt }}
         · {{ genderLabel(result.gender, t) }}
-        <span v-if="result.lunar_date"> · {{ result.lunar_date }}</span>
+        <span v-if="result.basic?.lunar_date || result.lunar_date">
+          · {{ result.basic?.lunar_date || result.lunar_date }}
+        </span>
         <span v-if="chartMode === 'chart' && result.target_dt"> · {{ $t('qizheng.targetInfo') }} {{ result.target_dt }}</span>
       </p>
 
-      <div v-if="result.grace" class="grace-row">
-        <span>{{ $t('qizheng.self') }} {{ result.grace.self_wx_label }}</span>
-        <span>{{ $t('qizheng.grace') }} {{ result.grace.grace_label }}</span>
-        <span>{{ $t('qizheng.useful') }} {{ result.grace.useful_label }}</span>
-        <span>{{ $t('qizheng.foe') }} {{ result.grace.foe_label }}</span>
-        <span>{{ $t('qizheng.hardship') }} {{ result.grace.hardship_label }}</span>
+      <div v-if="graceSummary" class="grace-row">
+        <span>{{ $t('qizheng.self') }} {{ graceSummary.self }}</span>
+        <span>{{ $t('qizheng.grace') }} {{ graceSummary.grace }}</span>
+        <span>{{ $t('qizheng.useful') }} {{ graceSummary.useful }}</span>
+        <span>{{ $t('qizheng.foe') }} {{ graceSummary.foe }}</span>
+        <span>{{ $t('qizheng.hardship') }} {{ graceSummary.hardship }}</span>
       </div>
 
       <QizhengChartWheel
@@ -149,7 +151,7 @@
         </button>
       </div>
 
-      <QizhengInterpret v-if="resultTab === 'interp'" :natal="result" />
+      <QizhengBasePanel v-if="resultTab === 'base'" :natal="result" />
       <QizhengStarTable
         v-else-if="resultTab === 'stars'"
         variant="natal"
@@ -168,7 +170,20 @@
         :selected-key="selectedStar"
         @select-star="selectedStar = $event"
       />
-      <QizhengLimitsPanel v-else-if="resultTab === 'limits'" :natal="result" />
+      <QizhengHuaYaoPanel
+        v-else-if="resultTab === 'huayao'"
+        :groups="result.hua_yao_groups || []"
+        :stars="result.stars"
+      />
+      <QizhengPatternsPanel
+        v-else-if="resultTab === 'patterns'"
+        :patterns="result.patterns || []"
+      />
+      <QizhengXiaoXianPanel
+        v-else-if="resultTab === 'xiaoxian'"
+        :years="result.limit_years || []"
+      />
+      <QizhengInterpret v-else-if="resultTab === 'interp'" :natal="result" />
     </div>
   </div>
 </template>
@@ -178,8 +193,11 @@ import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import QizhengChartWheel from '../../components/qizheng/QizhengChartWheel.vue'
 import QizhengStarTable from '../../components/qizheng/QizhengStarTable.vue'
+import QizhengHuaYaoPanel from '../../components/qizheng/QizhengHuaYaoPanel.vue'
+import QizhengPatternsPanel from '../../components/qizheng/QizhengPatternsPanel.vue'
+import QizhengXiaoXianPanel from '../../components/qizheng/QizhengXiaoXianPanel.vue'
+import QizhengBasePanel from '../../components/qizheng/QizhengBasePanel.vue'
 import QizhengInterpret from '../../components/qizheng/QizhengInterpret.vue'
-import QizhengLimitsPanel from '../../components/qizheng/QizhengLimitsPanel.vue'
 import {
   fetchQizhengChart
 } from '../../services/qizheng'
@@ -189,7 +207,7 @@ import { formatDeg, formatPalaceDegree, palaceByIndex, palaceNameByIndex, xiuDis
 const { t } = useI18n()
 
 const chartMode = ref('natal')
-const birthDate = ref('1983-09-05')
+const birthDate = ref('1993-09-05')
 const birthTime = ref('06:00:00')
 const gender = ref('male')
 const isSolarTime = ref(false)
@@ -204,19 +222,17 @@ const loading = ref(false)
 const error = ref('')
 const result = ref(null)
 const selectedStar = ref('')
-const resultTab = ref('interp')
+const resultTab = ref('base')
 
-const resultTabs = computed(() => {
-  const tabs = [
-    { id: 'interp', label: t('qizheng.tabInterp') },
-    { id: 'stars', label: t('qizheng.tabStars') },
-    { id: 'flow', label: t('qizheng.tabFlow') }
-  ]
-  if (chartMode.value === 'chart') {
-    tabs.push({ id: 'limits', label: t('qizheng.tabLimits') })
-  }
-  return tabs
-})
+const resultTabs = computed(() => [
+  { id: 'base', label: t('qizheng.tabBase') },
+  { id: 'stars', label: t('qizheng.tabStars') },
+  { id: 'flow', label: t('qizheng.tabFlow') },
+  { id: 'huayao', label: t('qizheng.tabHuaYao') },
+  { id: 'patterns', label: t('qizheng.tabPatterns') },
+  { id: 'xiaoxian', label: t('qizheng.tabXiaoXian') },
+  { id: 'interp', label: t('qizheng.tabInterp') }
+])
 
 const selectedStarVo = computed(() => {
   const key = selectedStar.value
@@ -226,6 +242,21 @@ const selectedStarVo = computed(() => {
     return (result.value.flow_stars || []).find((s) => s.key === key) || natal || null
   }
   return natal || null
+})
+
+/** 圆盘上方摘要：basic.grace.degree */
+const graceSummary = computed(() => {
+  const g = result.value?.basic?.grace
+  if (!g?.degree) return null
+  const row = g.degree
+  if (!row.self_wx_label && !row.grace_label) return null
+  return {
+    self: row.self_wx_label || '',
+    grace: row.grace_label || '',
+    useful: row.useful_label || '',
+    foe: row.foe_label || '',
+    hardship: row.hardship_label || ''
+  }
 })
 
 /** 始终走 chart：本命/行运共用一次结果，切换模式只改展示 */
@@ -247,15 +278,12 @@ function formParams() {
 function switchMode(mode) {
   if (chartMode.value === mode) return
   chartMode.value = mode
-  if (mode === 'natal' && resultTab.value === 'limits') {
-    resultTab.value = 'interp'
-  }
 }
 
 function applyResult(data) {
   result.value = data
   selectedStar.value = data?.stars?.[0]?.key || ''
-  resultTab.value = 'interp'
+  resultTab.value = 'base'
 }
 
 async function onSubmit() {

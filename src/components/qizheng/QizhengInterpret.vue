@@ -18,7 +18,7 @@
           <span class="pattern-type" :class="p.type">{{ patternTypeLabel(p.type, t) }}</span>
           <span class="corpus-title">{{ p.name || p.key }}</span>
         </div>
-        <p class="corpus-content">{{ p.description || $t('qizheng.noDescription') }}</p>
+        <p v-if="p.description" class="corpus-content">{{ p.description }}</p>
       </article>
     </div>
     <p v-else class="empty">{{ $t('qizheng.patternPending') }}</p>

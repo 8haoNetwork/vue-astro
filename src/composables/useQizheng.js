@@ -58,8 +58,9 @@ export function buildBasicInterpretation(vo, labels = {}) {
     ].filter(Boolean).join('')
   })
 
-  if (vo.grace) {
-    const g = vo.grace
+  const graceRoot = vo.basic?.grace
+  if (graceRoot) {
+    const g = graceRoot.degree || graceRoot
     blocks.push({
       key: 'grace',
       title: '恩用仇难',
