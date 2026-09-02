@@ -1,13 +1,12 @@
 <template>
   <section class="star-table-wrap">
-    <h4 v-if="title" class="table-title">{{ title }}</h4>
     <div class="table-scroll">
       <table class="star-table">
         <thead>
           <tr>
             <th>{{ $t('qizheng.colStar') }}</th>
-            <th>{{ $t('qizheng.colXiuDeg') }}</th>
             <th>{{ $t('qizheng.colPalaceDeg') }}</th>
+            <th>{{ $t('qizheng.colXiuDeg') }}</th>
             <th>{{ $t('qizheng.colDignity') }}</th>
             <th>{{ $t('qizheng.colStatus') }}</th>
             <th>{{ $t('qizheng.colHuaYao') }}</th>
@@ -24,8 +23,8 @@
               <span class="star-dot" :style="{ background: starColor(s.key) }" />
               {{ s.label }}
             </td>
-            <td>{{ xiuText(s) }}</td>
             <td>{{ palaceText(s) }}</td>
+            <td>{{ xiuText(s) }}</td>
             <td>{{ dignityText(s) }}</td>
             <td>{{ statusText(s) }}</td>
             <td>{{ huaYaoText(s) }}</td>
@@ -49,7 +48,6 @@ const props = defineProps({
   stars: { type: Array, default: () => [] },
   palaces: { type: Array, default: () => [] },
   xiuSpans: { type: Array, default: () => [] },
-  title: { type: String, default: '' },
   selectedKey: { type: String, default: '' },
   /** natal：只标逆；flow：标除顺以外的状态 */
   variant: { type: String, default: 'natal' }
@@ -109,12 +107,6 @@ function huaYaoText(s) {
 <style scoped>
 .star-table-wrap {
   margin-top: 16px;
-}
-
-.table-title {
-  margin: 0 0 8px;
-  font-size: 14px;
-  color: #5c4a32;
 }
 
 .table-scroll {

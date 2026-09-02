@@ -225,11 +225,10 @@
           opacity="0.75"
         />
 
-        <!-- 盘心 -->
+        <!-- 盘心：宿+度主、宿内度（命度类型见解读/基础，此处不重复「月度命」等） -->
         <circle :r="rCenter" fill="#fffdf8" stroke="#e0d4c0" :stroke-width="SW_FRAME" />
-        <text y="-9" text-anchor="middle" class="ming-xiu">{{ mingXiu }}</text>
-        <text y="3" text-anchor="middle" class="ming-deg">{{ mingDeg }}</text>
-        <text y="14" text-anchor="middle" class="ming-type">{{ mingType }}</text>
+        <text y="-4" text-anchor="middle" class="ming-xiu">{{ mingXiu }}</text>
+        <text y="10" text-anchor="middle" class="ming-deg">{{ mingDeg }}</text>
 
         <!-- 十一曜：单字 + 虚线接到本圈内沿的度数点（不进入内盘） -->
         <g
@@ -313,7 +312,7 @@ import {
   branchFill,
   branchStroke,
   ciSectorByBranch,
-  formatDeg,
+  formatDegDecimal,
   polar,
   spreadWheelDegs,
   starColor,
@@ -454,13 +453,12 @@ const mingXiu = computed(() => {
   if (!m) return ''
   return `${m.xiu_label || ''}${m.lord_label || ''}`
 })
-const mingDeg = computed(() => formatDeg(ming.value?.xiu_degree))
-const mingType = computed(() => ming.value?.lord_type_label || '')
+const mingDeg = computed(() => formatDegDecimal(ming.value?.xiu_degree))
 const mingBranch = computed(() => props.natal?.palaces?.[0]?.earthly_branch || '')
 
 const ariaLabel = computed(() => {
   if (!ming.value) return '七政四余圆盘'
-  return `七政四余圆盘，${mingType.value || ''} ${mingXiu.value || ''}`
+  return `七政四余圆盘，${mingXiu.value || ''} ${mingDeg.value || ''}`
 })
 
 function sector(i, r0, r1) {
@@ -890,21 +888,52 @@ const flowPoints = computed(() => {
 /** 中间层分界（星座/十二宫 或 十二宫/流曜） */
 const rMidSplit = rMidInner + T_MID
 
-const starDegMap = computed(() => {
-  const map = {}
-  for (const s of props.natal?.stars || []) {
-    map[s.key] = starWheelDeg(s)
-  }
-  return map
-})
-
 const aspectLines = computed(() => {
+  /** 比较盘：from=A 本命星，to=B 叠星（key 可相同，不能共用一张 map） */
+  const cross = props.natal?.cross_aspects
+  if (Array.isArray(cross) && cross.length) {
+    const aDeg = {}
+    for (const s of props.natal?.stars || []) {
+      aDeg[s.key] = starWheelDeg(s)
+    }
+    const bDeg = {}
+    for (const s of props.natal?.flow_stars || []) {
+      bDeg[s.key] = starWheelDeg(s)
+    }
+    return cross.map((a) => {
+      const d1 = aDeg[a.from_star]
+      const d2 = bDeg[a.to_star]
+      if (d1 == null || d2 == null) return null
+      const p1 = polar(cx, cy, rAspect, d1)
+      const p2 = polar(cx, cy, rAspect, d2)
+      return {
+        x1: p1.x,
+        y1: p1.y,
+        x2: p2.x,
+        y2: p2.y,
+        color: ASPECT_COLORS[a.type] || '#999',
+        width: a.type === 'conjunct' ? 2 : 1.2,
+        dash: a.type === 'trine' ? '4 3' : a.type === 'oppose' ? '1 3' : ''
+      }
+    }).filter(Boolean)
+  }
+
   const aspects = props.showFlow
     ? (props.natal?.flow_aspects || [])
     : (props.natal?.aspects || [])
+  const degMap = {}
+  if (props.showFlow) {
+    for (const s of props.natal?.flow_stars || []) {
+      degMap[s.key] = starWheelDeg(s)
+    }
+  } else {
+    for (const s of props.natal?.stars || []) {
+      degMap[s.key] = starWheelDeg(s)
+    }
+  }
   return aspects.map((a) => {
-    const d1 = starDegMap.value[a.from_star]
-    const d2 = starDegMap.value[a.to_star]
+    const d1 = degMap[a.from_star]
+    const d2 = degMap[a.to_star]
     if (d1 == null || d2 == null) return null
     const p1 = polar(cx, cy, rAspect, d1)
     const p2 = polar(cx, cy, rAspect, d2)
@@ -1016,8 +1045,7 @@ function selectStar(key) {
   fill: var(--ink);
 }
 
-.ming-deg,
-.ming-type {
+.ming-deg {
   font-size: var(--fs-aux);
   fill: var(--ink-muted);
 }

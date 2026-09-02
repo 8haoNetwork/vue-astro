@@ -342,29 +342,10 @@ export function annularSectorPath(cx, cy, rInner, rOuter, startDeg, sweepDeg) {
   ].join(' ')
 }
 
-export function formatDeg(deg) {
-  if (deg == null || Number.isNaN(Number(deg))) return ''
-  const n = Number(deg)
-  const sign = n < 0 ? '-' : ''
-  const abs = Math.abs(n)
-  let d = Math.floor(abs)
-  let m = Math.round((abs - d) * 60)
-  if (m === 60) {
-    d += 1
-    m = 0
-  }
-  return `${sign}${d}°${String(m).padStart(2, '0')}′`
-}
-
 /** 度数两位小数，如 12.20° */
 export function formatDegDecimal(deg, digits = 2) {
   if (deg == null || Number.isNaN(Number(deg))) return ''
   return `${Number(deg).toFixed(digits)}°`
-}
-
-export function formatPalaceDegree(branchLabel, degree) {
-  if (!branchLabel && degree == null) return ''
-  return `${branchLabel || ''} ${formatDeg(degree)}`.trim()
 }
 
 export function formatPalaceDegreeDecimal(branchLabel, degree, digits = 2) {
@@ -427,10 +408,6 @@ const PALACE_LABEL_SHORT = {
 export function palaceByIndex(palaces, index) {
   if (!Array.isArray(palaces) || index == null) return null
   return palaces.find((p) => p.index === index) || palaces[index] || null
-}
-
-export function palaceNameByIndex(palaces, index) {
-  return palaceByIndex(palaces, index)?.name || ''
 }
 
 export function xiuSpanByKey(spans, xiu) {

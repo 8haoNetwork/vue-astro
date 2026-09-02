@@ -1,105 +1,82 @@
 <template>
-  <section v-if="limits || years.length" class="limits">
-    <h4 class="section-title">{{ $t('qizheng.currentLimits') }}</h4>
-    <div v-if="limits" class="limit-chips">
-      <span class="chip">小限 {{ limits.xiao_xian_label }}</span>
-      <span class="chip">月限 {{ limits.yue_xian_label }}</span>
-      <span class="chip">飞限 {{ limits.fei_xian_label }}</span>
-      <span v-if="limits.tong_xian_label" class="chip">童限 {{ limits.tong_xian_label }}</span>
-      <span class="chip">
-        大限 {{ limits.da_xian_palace_label }}
-        {{ limits.da_xian_start_age }}–{{ limits.da_xian_end_age }}岁
-      </span>
+  <aside v-if="limits" class="xingxian-panel">
+    <h4 class="xingxian-title">{{ $t('qizheng.xingXian') }}</h4>
+    <div class="xingxian-row">
+      <span class="lab">{{ $t('qizheng.xiaoXian') }}</span>
+      <span class="val">{{ limits.xiao_xian_label }}</span>
     </div>
-
-    <h4 v-if="years.length" class="section-title more">{{ $t('qizheng.limitYears') }}</h4>
-    <div v-if="years.length" class="table-scroll">
-      <table class="year-table">
-        <thead>
-          <tr>
-            <th>虚岁</th>
-            <th>年</th>
-            <th>干支</th>
-            <th>小限</th>
-            <th>飞限</th>
-            <th>童限</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row in years" :key="row.age + '-' + row.year">
-            <td>{{ row.age }}</td>
-            <td>{{ row.year }}</td>
-            <td>{{ row.gan_zhi }}</td>
-            <td>{{ row.xiao_xian_label }}</td>
-            <td>{{ row.fei_xian_label }}</td>
-            <td>{{ row.tong_xian_label || '—' }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="xingxian-row">
+      <span class="lab">{{ $t('qizheng.yueXian') }}</span>
+      <span class="val">{{ limits.yue_xian_label }}</span>
     </div>
-  </section>
+    <div class="xingxian-row">
+      <span class="lab">{{ $t('qizheng.feiXian') }}</span>
+      <span class="val">{{ limits.fei_xian_label }}</span>
+    </div>
+    <div class="xingxian-row">
+      <span class="lab">{{ $t('qizheng.chanRi') }}</span>
+      <span class="val">{{ limits.chan_ri_label }}</span>
+    </div>
+    <div v-if="dingDuText" class="xingxian-row ding">
+      <span class="lab">{{ $t('qizheng.dingDu') }}</span>
+      <span class="val">{{ dingDuText }}</span>
+    </div>
+  </aside>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import { formatDegDecimal } from '../../utils/qizhengChart'
 
 const props = defineProps({
-  natal: { type: Object, default: null }
+  /** QizhengCurrentLimitsVo */
+  limits: { type: Object, default: null }
 })
 
-const limits = computed(() => props.natal?.current_limits || null)
-const years = computed(() => props.natal?.limit_years || [])
+/** 顶度：宿内度 + 宫度，如 星2.10° 午1.35° */
+const dingDuText = computed(() => {
+  const d = props.limits?.ding_du
+  if (!d) return ''
+  const xiu = `${d.xiu_label || ''}${formatDegDecimal(d.xiu_degree)}`.trim()
+  const palace = `${d.earthly_branch_label || ''}${formatDegDecimal(d.palace_degree)}`.trim()
+  return [xiu, palace].filter(Boolean).join(' ')
+})
 </script>
 
 <style scoped>
-.limits {
-  margin-top: 16px;
+.xingxian-panel {
+  pointer-events: none;
+  min-width: 7.5em;
+  color: #5c4a32;
+  font-size: 13px;
+  line-height: 1.55;
 }
 
-.section-title {
+.xingxian-title {
   margin: 0 0 8px;
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 700;
   color: #5c4a32;
 }
 
-.section-title.more {
-  margin-top: 14px;
-}
-
-.limit-chips {
+.xingxian-row {
   display: flex;
-  flex-wrap: wrap;
   gap: 8px;
+  align-items: baseline;
+  padding: 1px 0;
 }
 
-.chip {
-  background: #faf6ef;
-  border: 1px solid #f0ebe7;
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 12px;
-  color: #5c4a32;
+.xingxian-row.ding {
+  flex-wrap: wrap;
 }
 
-.table-scroll {
-  overflow-x: auto;
-}
-
-.year-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-}
-
-.year-table th,
-.year-table td {
-  padding: 8px 6px;
-  text-align: left;
-  border-bottom: 1px solid #f0ebe7;
-}
-
-.year-table th {
+.lab {
+  flex-shrink: 0;
   color: #8a7a62;
+}
+
+.val {
+  color: #5c4a32;
   font-weight: 500;
 }
 </style>

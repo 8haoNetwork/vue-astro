@@ -1,50 +1,126 @@
 <template>
   <section class="interpret">
-    <h4 class="section-title">{{ $t('qizheng.basicInterp') }}</h4>
-    <div v-if="blocks.length" class="corpus-list">
-      <article v-for="b in blocks" :key="b.key" class="corpus-item">
-        <div class="corpus-header">
-          <span class="corpus-title">{{ b.title }}</span>
-        </div>
-        <p class="corpus-content">{{ b.body }}</p>
-      </article>
-    </div>
-    <p v-else class="empty">{{ $t('qizheng.noInterp') }}</p>
+    <template v-if="hasReading">
+      <h4 class="section-title">{{ $t('qizheng.readingSummary') }}</h4>
+      <div v-if="summary" class="corpus-item summary">
+        <p class="corpus-content">{{ summary }}</p>
+      </div>
+      <p v-else class="empty">{{ $t('qizheng.noInterp') }}</p>
 
-    <h4 class="section-title more">{{ $t('qizheng.moreInterp') }}</h4>
-    <div v-if="patterns.length" class="corpus-list">
-      <article v-for="p in patterns" :key="p.key" class="corpus-item">
-        <div class="corpus-header">
-          <span class="pattern-type" :class="p.type">{{ patternTypeLabel(p.type, t) }}</span>
-          <span class="corpus-title">{{ p.name || p.key }}</span>
+      <h4 class="section-title more">{{ $t('qizheng.readingHighlights') }}</h4>
+      <div v-if="highlights.length" class="corpus-list">
+        <article
+          v-for="item in highlights"
+          :key="'h-' + item.kind + '-' + item.key"
+          class="corpus-item"
+        >
+          <div class="corpus-header">
+            <span
+              v-if="item.tone === 'lucky' || item.tone === 'warning'"
+              class="tone"
+              :class="item.tone"
+            >{{ toneLabel(item.tone) }}</span>
+            <span class="corpus-title">{{ item.title || item.key }}</span>
+          </div>
+          <p class="corpus-content">{{ item.body }}</p>
+        </article>
+      </div>
+      <p v-else class="empty">{{ $t('qizheng.noInterp') }}</p>
+
+      <template v-if="timing">
+        <h4 class="section-title more">{{ timing.title || $t('qizheng.readingTiming') }}</h4>
+        <div v-if="timing.body" class="corpus-item summary">
+          <p class="corpus-content">{{ timing.body }}</p>
         </div>
-        <p v-if="p.description" class="corpus-content">{{ p.description }}</p>
-      </article>
-    </div>
-    <p v-else class="empty">{{ $t('qizheng.patternPending') }}</p>
+        <div v-if="timingItems.length" class="corpus-list sub-list">
+          <article
+            v-for="item in timingItems"
+            :key="'t-' + item.kind + '-' + item.key"
+            class="corpus-item"
+          >
+            <div class="corpus-header">
+              <span class="corpus-title">{{ item.title || item.key }}</span>
+            </div>
+            <p class="corpus-content">{{ item.body }}</p>
+          </article>
+        </div>
+      </template>
+
+      <template v-if="relation">
+        <h4 class="section-title more">{{ relation.title || $t('qizheng.readingRelation') }}</h4>
+        <div v-if="relation.body" class="corpus-item summary">
+          <p class="corpus-content">{{ relation.body }}</p>
+        </div>
+        <div v-if="relationItems.length" class="corpus-list sub-list">
+          <article
+            v-for="item in relationItems"
+            :key="'r-' + item.kind + '-' + item.key"
+            class="corpus-item"
+          >
+            <div class="corpus-header">
+              <span
+                v-if="item.tone === 'lucky' || item.tone === 'warning'"
+                class="tone"
+                :class="item.tone"
+              >{{ toneLabel(item.tone) }}</span>
+              <span class="corpus-title">{{ item.title || item.key }}</span>
+            </div>
+            <p class="corpus-content">{{ item.body }}</p>
+          </article>
+        </div>
+      </template>
+    </template>
+    <p v-else class="empty">{{ $t('qizheng.noInterp') }}</p>
   </section>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { buildBasicInterpretation, patternTypeLabel } from '../../composables/useQizheng'
 
 const props = defineProps({
+  /** NatalVo / ChartVo / ComparisonVo：读 natal.reading */
   natal: { type: Object, default: null }
 })
 
 const { t } = useI18n()
-const interpLabels = computed(() => ({
-  grace: t('qizheng.grace'),
-  useful: t('qizheng.useful'),
-  foe: t('qizheng.foe'),
-  hardship: t('qizheng.hardship'),
-  patternLucky: t('qizheng.patternLucky'),
-  patternWarning: t('qizheng.patternWarning')
-}))
-const blocks = computed(() => buildBasicInterpretation(props.natal, interpLabels.value))
-const patterns = computed(() => props.natal?.patterns || [])
+
+const reading = computed(() => props.natal?.reading || null)
+
+const hasReading = computed(() => {
+  const r = reading.value
+  if (!r) return false
+  return Boolean(
+    r.summary ||
+      (r.highlights || []).length ||
+      r.timing ||
+      r.relation
+  )
+})
+
+const summary = computed(() => String(reading.value?.summary || '').trim())
+
+const highlights = computed(() =>
+  (reading.value?.highlights || []).filter((h) => h && String(h.body || '').trim())
+)
+
+const timing = computed(() => reading.value?.timing || null)
+
+const timingItems = computed(() =>
+  (timing.value?.items || []).filter((h) => h && String(h.body || '').trim())
+)
+
+const relation = computed(() => reading.value?.relation || null)
+
+const relationItems = computed(() =>
+  (relation.value?.items || []).filter((h) => h && String(h.body || '').trim())
+)
+
+function toneLabel(tone) {
+  if (tone === 'warning') return t('qizheng.patternWarning')
+  if (tone === 'lucky') return t('qizheng.patternLucky')
+  return ''
+}
 </script>
 
 <style scoped>
@@ -68,10 +144,18 @@ const patterns = computed(() => props.natal?.patterns || [])
   gap: 8px;
 }
 
+.sub-list {
+  margin-top: 8px;
+}
+
 .corpus-item {
   background: #faf8f6;
   border-radius: 10px;
   padding: 10px 12px;
+}
+
+.corpus-item.summary {
+  margin-bottom: 0;
 }
 
 .corpus-header {
@@ -92,20 +176,22 @@ const patterns = computed(() => props.natal?.patterns || [])
   font-size: 13px;
   line-height: 1.65;
   color: #666;
+  white-space: pre-wrap;
 }
 
-.pattern-type {
+.tone {
   font-size: 11px;
   padding: 1px 6px;
   border-radius: 8px;
+  flex-shrink: 0;
 }
 
-.pattern-type.lucky {
+.tone.lucky {
   background: #eef5e8;
   color: #5a8a4a;
 }
 
-.pattern-type.warning {
+.tone.warning {
   background: #f8ecec;
   color: #c45c4a;
 }
