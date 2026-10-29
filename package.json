@@ -1,10 +1,11 @@
 {
   "name": "vue-astro",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite --mode dev",
+    "prod": "vite --mode prod",
     "build": "vite build",
     "preview": "vite preview"
   },
